@@ -1,8 +1,8 @@
 /* 
-  This is a SAMPLE FILE to get you started.
-  Please, follow the project instructions to complete the tasks.
+Ceci est un EXEMPLE DE FICHIER pour vous aider à démarrer. 
+Veuillez suivre les instructions du projet pour réaliser les tâches.
 */
 
 document.addEventListener('DOMContentLoaded', () => {
-    /* DO SOMETHING */
+    /* FAIS QUELQUE CHOSE */
   });
