@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Nunito Sans', Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: #F7F7F7;
+    color: #222222;
+    font-size: 16px;
+}
+
+/* Header/navigation */
+header {
+    background: #fff;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 3vw;
+}
+
+.logo {
+    height: 42px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+nav a {
+    color: #222222;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 22px;
+    transition: background 0.2s, color 0.2s;
+}
+nav a.login-button {
+    color: #FF385C;
+    border: 1.5px solid #FF385C;
+    background: none;
+}
+nav a.login-button:hover {
+    background: #FF385C;
+    color: #fff;
+}
+
+/* Main wrapper */
+main {
+    max-width: 800px;
+    margin: 36px auto 0 auto;
+    padding: 22px 12px 24px 12px;
+    background: none;
+}
+
+/* Titres */
+h2 {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+h3 {
+    font-size: 1.2rem;
+    margin-top: 18px;
+    color: #222;
+}
+
+/* Cards pour les lieux et les avis */
+.place-card, .review-card {
+    margin: 20px 0;
+    padding: 18px 22px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1.2px solid #e8e8e8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.place-card h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+.place-card p {
+    color: #555;
+}
+
+.details-button, button, input[type=submit] {
+    background: #FF385C;
+    color: #fff;
+    border: none;
+    border-radius: 22px;
+    padding: 11px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 9px;
+    box-shadow: 0 2px 8px rgba(255,56,92,0.09);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.details-button:hover, button:hover, input[type=submit]:hover {
+    background: #d91243;
+    box-shadow: 0 3px 10px rgba(255,56,92,0.16);
+    transform: translateY(-2px);
+}
+
+form {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem 18px 1.5rem 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    max-width: 430px;
+    gap: 12px;
+    margin: 0 auto;
+    border: 1.2px solid #e4e4e4;
+}
+form label {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 4px;
+}
+form input, form textarea, form select {
+    border: 1.2px solid #eee;
+    border-radius: 8px;
+    padding: 11px 9px;
+    font-size: 1rem;
+    margin-bottom: 14px;
+    background-color: #f7f7f7;
+    transition: border 0.2s;
+}
+form textarea {
+    min-height: 80px;
+}
+form input:focus, form textarea:focus, form select:focus {
+    border: 1.5px solid #FF385C;
+    outline: none;
+}
+
+#filter {
+    background: #fff;
+    border-radius: 13px;
+    padding: 16px 16px 12px 16px;
+    box-shadow: 0 0.5px 2px rgba(0,0,0,0.04);
+    margin-bottom: 18px;
+    border: 1.1px solid #ececec;
+}
+#filter label {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+/* Footer */
+footer {
+    background: #fff;
+    text-align: center;
+    padding: 1.2rem 0;
+    color: #717171;
+    font-size: 14px;
+    border-top: 1px solid #ececec;
+    margin-top: 4rem;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 650px) {
+    main {
+        max-width: 99vw;
+        padding: 7vw 4vw 4vw 4vw;
+    }
+    .place-card, .review-card, form, #filter {
+        padding: 1rem;
+    }
+    nav a {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+        gap: 8px;
+    }
+    header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 1rem;
+    }
+}
+
+/* Grille pour les cards de locations */
+#places-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+/* Pour mobile : une seule colonne */
+@media (max-width: 600px) {
+  #places-list {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 0 7px;
+  }
+  main {
+    padding: 10px 0;
+  }
+}
+body { background: #88ff88 !important; }
