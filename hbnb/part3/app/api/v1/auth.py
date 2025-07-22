@@ -18,7 +18,7 @@ error_model = api.model('Error', {
     'error': fields.String()
 })
 
-@api.route('/login')
+@api.route('/login', '/login/')
 class Login(Resource):
     @api.expect(login_model, validate=True)
     @api.marshal_with(token_model)
