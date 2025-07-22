@@ -1,5 +1,6 @@
 from flask_restx import Api
 from flask import Flask
+from flask_cors import CORS
 from app.extensions import db, jwt
 
 def create_app(config_name='default'):
@@ -12,6 +13,9 @@ def create_app(config_name='default'):
 
     db.init_app(app)
     jwt.init_app(app)
+
+    # Ajout de CORS avec autorisation pour ton frontend localhost:8000
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8000"}})
 
     authorizations = {
         'Bearer Auth': {
