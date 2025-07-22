@@ -1,42 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of Places</title>
-    <link rel="stylesheet" href="css/styles.css"> <!-- adapter le chemin si nécessaire -->
-    <link rel="icon" href="images/icon.png">
+  <meta charset="UTF-8" />
+  <title>HBNB - Accueil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="static/styles.css" />
 </head>
 <body>
-    <header>
-        <img src="images/logo.png" alt="HBnB Logo" class="logo">
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
-        </nav>
-    </header>
-    <main>
-        <section id="filter">
-            <h2>Filtres</h2>
-            <label for="price-filter">Max Price:</label>
-            <select id="price-filter">
-                <!-- Les options seront renseignées dynamiquement -->
-            </select>
-        </section>
-        <section id="places-list">
-        <h2>Liste des lieux</h2>
-            <!-- La liste des lieux sous forme de cartes (place-card) sera renseignée ici -->
-            <!-- Exemple d'une carte statique à dupliquer : -->
-            <div class="place-card">
-                <h2>Charming Loft</h2>
-                <p>120€/night</p>
-                <button class="details-button">View Details</button>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>All rights reserved.</p>
-    </footer>
-    <script src="js/scripts.js"></script> <!-- adapter le chemin si nécessaire -->
+  <main>
+    <h1>Bienvenue sur HBNB !</h1>
+    <section id="places-list">
+      <!-- Liste des logements (à récupérer avec API + token) -->
+    </section>
+    <button id="logout-btn" style="display:none;">Déconnexion</button>
+  </main>
+
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = getCookie('token');
+      const logoutBtn = document.getElementById('logout-btn');
+      const placesList = document.getElementById('places-list');
+    
+      // Ligne commentée pour ne pas empêcher l'accès sans connexion
+      /*
+      if (!token) {
+          // Pas connecté => redirige vers login
+          window.location.href = 'login.html';
+          return;
+      }
+      */
+
+      // Optionnel : n’afficher le bouton déconnexion que si token existe
+      if (token) {
+        logoutBtn.style.display = 'block';
+        logoutBtn.addEventListener('click', () => {
+          document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+          window.location.href = 'login.html';
+        });
+      }
+
+      // Exemple : affiche un message d’accueil simple,
+      // tu peux ici charger la liste des logements accessibles publiquement
+      placesList.innerHTML = `<p>Voici la liste des logements disponibles (à implémenter).</p>`;
+    });
+  </script>
+
+  <script src="static/scripts.js"></script>
 </body>
 </html>

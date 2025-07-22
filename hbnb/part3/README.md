@@ -149,7 +149,6 @@ GET /api/v1/places/ : Liste des places (public)
 
 POST /api/v1/reviews/ : Ajouter un avis (protégé)
 
-
 TEST API AVEC CURL
 # Login
 curl -X POST http://localhost:5000/api/v1/auth/login \
