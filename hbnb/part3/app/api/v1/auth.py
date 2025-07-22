@@ -41,12 +41,11 @@ class Login(Resource):
         # Ajoute le token dans un cookie HttpOnly sécurisé
         set_access_cookies(resp, access_token)
 
-        return resp
+        return resp # <-- ne pas faire (resp, 200)
     
     @api.route('/logout')
     class Logout(Resource):
-        @api.response(200, 'Logout success')
         def post(self):
             resp = jsonify({'logout': True})
             unset_jwt_cookies(resp)
-            return resp, 200  # <-- ne pas faire (resp, 200)
+            return resp  # <<< retourne uniquement Response, pas (resp, 200)
