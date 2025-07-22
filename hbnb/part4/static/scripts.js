@@ -25,9 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     const data = await response.json();
 
-                    // Stocke le JWT dans un cookie (sans Secure pour local dev)
-                    // Ajout SameSite=Strict pour un peu de sécurité
-                    document.cookie = `token=${data.access_token}; path=/; SameSite=Strict;`;
+                    // Si on stockes le token côté backend HttpOnly, on n'as pas besoin de le stocker ici en JS
+                    // Sinon, utiliser token côté JS, stocke ici
+                    // Ici on suppose que le token est stocké dans cookie HttpOnly, donc on peut commenter ou supprimer la ligne suivante :
+                    // document.cookie = `token=${data.access_token}; path=/; SameSite=Strict;`;
 
                     console.log('Connexion réussie, token stocké.');
 
@@ -49,5 +50,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    }
+
+    // Fonction logout
+    async function logout() {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/v1/auth/logout', {
+                method: 'POST',
+                credentials: 'include',  // très important pour envoyer les cookies
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                // Rediriger vers la page de login
+                window.location.href = 'login.html';
+            } else {
+                console.error('Erreur lors de la déconnexion');
+            }
+        } catch (error) {
+            console.error('Erreur réseau lors de la déconnexion:', error);
+        }
+    }
+
+    // Attachement au bouton logout si présent
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
     }
 });

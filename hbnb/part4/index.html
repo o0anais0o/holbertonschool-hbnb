@@ -12,45 +12,62 @@
     <section id="places-list">
       <!-- Liste des logements (à récupérer avec API + token) -->
     </section>
+
+    <!-- Bouton déconnexion caché par défaut -->
     <button id="logout-btn" style="display:none;">Déconnexion</button>
   </main>
 
   <script>
+    // Fonction pour lire un cookie par son nom
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
       const token = getCookie('token');
       const logoutBtn = document.getElementById('logout-btn');
       const placesList = document.getElementById('places-list');
-    
-      // Ligne commentée pour ne pas empêcher l'accès sans connexion
+
+      // Si tu veux empêcher l’accès sans token, décommente ce bloc
       /*
       if (!token) {
-          // Pas connecté => redirige vers login
           window.location.href = 'login.html';
           return;
       }
       */
 
-      // Optionnel : n’afficher le bouton déconnexion que si token existe
-      if (token) {
-        logoutBtn.style.display = 'block';
-        logoutBtn.addEventListener('click', () => {
-          document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-          window.location.href = 'login.html';
+      if (token && logoutBtn) {
+        logoutBtn.style.display = 'inline-block';
+        // Événement déconnexion via demande POST côté backend avec fetch
+        logoutBtn.addEventListener('click', async () => {
+          try {
+            const response = await fetch('http://127.0.0.1:5000/api/v1/auth/logout', {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+              // Efface le cookie côté JS (optionnel si côté serveur gère bien)
+              document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+              window.location.href = 'login.html';
+            } else {
+              alert('Erreur lors de la déconnexion');
+            }
+          } catch (err) {
+            alert('Erreur réseau lors de la déconnexion');
+            console.error(err);
+          }
         });
       }
 
-      // Exemple : affiche un message d’accueil simple,
-      // tu peux ici charger la liste des logements accessibles publiquement
+      // Exemple simple pour afficher un message dans la section places
       placesList.innerHTML = `<p>Voici la liste des logements disponibles (à implémenter).</p>`;
     });
   </script>
 
-  <script src="static/scripts.js"></script> 
+  <script src="static/scripts.js"></script>
 </body>
 </html>
