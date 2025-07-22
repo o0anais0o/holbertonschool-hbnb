@@ -1,5 +1,5 @@
 from flask_restx import Api
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from app.extensions import db, jwt
 
@@ -14,15 +14,29 @@ def create_app(config_name='default'):
     db.init_app(app)
     jwt.init_app(app)
 
-    # Ajout de CORS avec autorisation pour ton frontend localhost:8000
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8000"}})
+    # CORS global, avec support des credentials (cookies, auth)
+    # et autorisation exacte de l'origine frontend http://localhost:8000
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8000"}}, supports_credentials=True)
+
+    # Gestion explicite des requêtes OPTIONS (préflight)
+    @app.before_request
+    def handle_options():
+        from flask import request
+        if request.method == "OPTIONS":
+            response = jsonify({})
+            response.status_code = 200
+            response.headers.add("Access-Control-Allow-Origin", "http://localhost:8000")
+            response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+            response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+            response.headers.add("Access-Control-Allow-Credentials", "true")
+            return response
 
     authorizations = {
         'Bearer Auth': {
             'type': 'apiKey',
             'in': 'header',
             'name': 'Authorization',
-            'description': "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'"
+            'description': "JWT Authorization header using Bearer scheme. Example: 'Authorization: Bearer {token}'"
         }
     }
 
@@ -36,7 +50,6 @@ def create_app(config_name='default'):
         security='Bearer Auth'
     )
 
-    # Import et ajout des namespaces Flask-RESTX
     from app.api.v1.users import api as users_ns
     from app.api.v1.places import api as places_ns
     from app.api.v1.amenities import api as amenities_ns
