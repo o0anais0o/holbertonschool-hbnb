@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: email, password: password })
+                    body: JSON.stringify({email, password}),
+                    credentials: 'include'  // <- important pour cookies
                 });
 
                 if (response.ok) {
