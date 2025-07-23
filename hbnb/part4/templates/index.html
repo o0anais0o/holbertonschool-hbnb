@@ -18,53 +18,53 @@
   </main>
 
   <script>
-    // Fonction pour lire un cookie par son nom
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return null;
-    }
-
     document.addEventListener('DOMContentLoaded', async () => {
-      const token = getCookie('token');
       const logoutBtn = document.getElementById('logout-btn');
       const placesList = document.getElementById('places-list');
 
-      // Si tu veux empêcher l’accès sans token, décommente ce bloc
-      /*
-      if (!token) {
+      try {
+        // Vérification connexion via endpoint /auth/status
+        const response = await fetch('http://127.0.0.1:5000/api/v1/auth/status', {
+          method: 'GET',
+          credentials: 'include'  // Envoie les cookies (notamment JWT HttpOnly)
+        });
+
+        if (response.ok) {
+          // Si connecté, affiche bouton déconnexion
+          logoutBtn.style.display = 'inline-block';
+
+          // Éventuel chargement / affichage de la liste des logements ici
+          placesList.innerHTML = `<p>Voici la liste des logements disponibles (à implémenter).</p>`;
+        } else {
+          // Pas connecté, redirection vers login
           window.location.href = 'login.html';
           return;
+        }
+      } catch (err) {
+        console.error('Erreur lors de la vérification de connexion :', err);
+        window.location.href = 'login.html';
+        return;
       }
-      */
 
-      if (token && logoutBtn) {
-        logoutBtn.style.display = 'inline-block';
-        // Événement déconnexion via demande POST côté backend avec fetch
-        logoutBtn.addEventListener('click', async () => {
-          try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/auth/logout', {
-              method: 'POST',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' }
-            });
-            if (response.ok) {
-              // Efface le cookie côté JS (optionnel si côté serveur gère bien)
-              document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-              window.location.href = 'login.html';
-            } else {
-              alert('Erreur lors de la déconnexion');
-            }
-          } catch (err) {
-            alert('Erreur réseau lors de la déconnexion');
-            console.error(err);
+      // Événement déconnexion
+      logoutBtn.addEventListener('click', async () => {
+        try {
+          const res = await fetch('http://127.0.0.1:5000/api/v1/auth/logout', {
+            method: 'POST',
+            credentials: 'include',  // Important pour envoyer cookie et pouvoir supprimer côté serveur
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (res.ok) {
+            // Redirection vers login après déconnexion réussie
+            window.location.href = 'login.html';
+          } else {
+            alert('Erreur lors de la déconnexion');
           }
-        });
-      }
-
-      // Exemple simple pour afficher un message dans la section places
-      placesList.innerHTML = `<p>Voici la liste des logements disponibles (à implémenter).</p>`;
+        } catch (error) {
+          alert('Erreur réseau lors de la déconnexion');
+          console.error(error);
+        }
+      });
     });
   </script>
 
