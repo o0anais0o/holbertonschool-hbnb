@@ -8,8 +8,8 @@ def create_app(config_name='default'):
 
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
+    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
 
     db.init_app(app)
     jwt.init_app(app)
