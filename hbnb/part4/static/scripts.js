@@ -79,4 +79,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', logout);
     }
+
+  // Vérifie si utilisateur connecté via /auth/status
+  // Ceci contrôle l’affichage du bouton logout et évite l’accès index si non connecté
+  (async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/v1/auth/status', {
+        method: 'GET',
+        credentials: 'include'  // Envoi obligatoire du cookie JWT HttpOnly
+      });
+
+      if (response.ok) {
+        // Connecté : affiche bouton déconnexion
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+      } else {
+        // Non connecté : redirige vers login
+        if (window.location.pathname.endsWith('index.html')) {
+          window.location.href = 'login.html';
+        }
+      }
+    } catch (err) {
+      console.error('Erreur lors de la vérification du statut login:', err);
+      // En cas d’erreur réseau, on part aussi sur login.html
+      if (window.location.pathname.endsWith('index.html')) {
+        window.location.href = 'login.html';
+      }
+    }
+  })();
 });
