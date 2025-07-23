@@ -50,6 +50,12 @@ nav a.login-button:hover {
     background: #FF385C;
     color: #fff;
 }
+.error-message {
+  color: #d91243;
+  font-weight: 600;
+  margin-top: 6px;
+  display: block;
+}
 
 /* Main wrapper */
 main {
