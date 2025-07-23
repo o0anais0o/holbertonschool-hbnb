@@ -88,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'GET',
         credentials: 'include'  // Envoi obligatoire du cookie JWT HttpOnly
       });
-
       if (response.ok) {
         // Connecté : affiche bouton déconnexion
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
