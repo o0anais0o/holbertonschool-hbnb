@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Envoi de la requête POST au endpoint login
-                const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
+                const response = await fetch('http://localhost:5000/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({email, password}),
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction logout
     async function logout() {
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/auth/logout', {
+            const response = await fetch('http://localhost:5000/api/v1/auth/logout', {
                 method: 'POST',
                 credentials: 'include',  // très important pour envoyer les cookies
                 headers: {
@@ -84,12 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ceci contrôle l’affichage du bouton logout et évite l’accès index si non connecté
   (async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/v1/auth/status', {
+      const response = await fetch('http://localhost:5000/api/v1/auth/status', {
         method: 'GET',
         credentials: 'include'  // Envoi obligatoire du cookie JWT HttpOnly
       });
       if (response.ok) {
         // Connecté : affiche bouton déconnexion
+        const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
       } else {
         // Non connecté : redirige vers login
@@ -97,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = 'login.html';
         }
       }
-    } catch (err) {
-      console.error('Erreur lors de la vérification du statut login:', err);
+    } catch (error) {
+      console.error('Erreur lors de la vérification du statut login:', error);
       // En cas d’erreur réseau, on part aussi sur login.html
       if (window.location.pathname.endsWith('index.html')) {
         window.location.href = 'login.html';
