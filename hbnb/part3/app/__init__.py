@@ -16,7 +16,7 @@ def create_app(config_name='default'):
 
     # CORS global, avec support des credentials (cookies, auth)
     # et autorisation exacte de l'origine frontend http://localhost:8000
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8000"}}, supports_credentials=True)
+    CORS(app, supports_credentials=True, origins=["http://localhost:8000"])
 
     # Gestion explicite des requêtes OPTIONS (préflight)
     @app.before_request

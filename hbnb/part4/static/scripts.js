@@ -154,13 +154,22 @@ function displayPlaces(places) {
 
 // Gestion du filtre prix côté client
 function setupPriceFilter() {
+  console.log('setupPriceFilter called');
   const priceFilter = document.getElementById('price-filter');
+  if (!priceFilter) {
+    console.error('Element #price-filter not found in DOM!');
+    return;
+  }
   priceFilter.addEventListener('change', () => {
     const selectedValue = priceFilter.value;
-
     const placeElements = document.querySelectorAll('.place-item');
     placeElements.forEach(el => {
-      el.style.display = (selectedValue === 'All' || price <= parseFloat(selectedValue)) ? 'block' : 'none';
+    const price = parseFloat(el.dataset.price);
+    if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
     });
   });
 }
