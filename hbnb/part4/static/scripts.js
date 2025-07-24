@@ -174,4 +174,5 @@ function setupPriceFilter() {
 // Initialise le filtre au chargement du script
 document.addEventListener('DOMContentLoaded', () => {
   setupPriceFilter();
+  loadPlaces();  // on charge et affiche les places au chargement de la page
 });
