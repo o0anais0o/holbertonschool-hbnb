@@ -107,3 +107,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 });
+// Variable globale pour garder la liste complète des places
+let allPlaces = [];
+
+// Fonction pour récupérer et afficher la liste des places depuis l'API
+async function loadPlaces() {
+  const placesList = document.getElementById('places-list');
+
+  try {
+    const response = await fetch('http://localhost:5000/api/v1/places', {
+      method: 'GET',
+      credentials: 'include'  // Important pour envoyer cookie de session
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des places');
+    }
+
+    const places = await response.json();
+    allPlaces = places;
+    displayPlaces(allPlaces);
+  } catch (error) {
+    placesList.innerHTML = `<p>Erreur lors du chargement des logements.</p>`;
+    console.error(error);
+  }
+}
+
+// Fonction pour afficher les places dans le DOM
+function displayPlaces(places) {
+  const placesList = document.getElementById('places-list');
+  placesList.innerHTML = '';
+
+  places.forEach(place => {
+    const placeDiv = document.createElement('div');
+    placeDiv.className = 'place-item';
+    placeDiv.dataset.price = place.price_by_night;
+
+    placeDiv.innerHTML = `
+      <h3>${place.name}</h3>
+      <p>${place.description}</p>
+      <p>Lieu : ${place.city_name || ''}</p>
+      <p>Prix : ${place.price_by_night}€ / nuit</p>
+    `;
+    placesList.appendChild(placeDiv);
+  });
+}
+
+// Gestion du filtre prix côté client
+function setupPriceFilter() {
+  const priceFilter = document.getElementById('price-filter');
+  priceFilter.addEventListener('change', () => {
+    const selectedValue = priceFilter.value;
+
+    const placeElements = document.querySelectorAll('.place-item');
+    placeElements.forEach(el => {
+      const price = parseFloat(el.dataset.price);
+      if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  });
+}
+
+// Initialise le filtre au chargement du script
+document.addEventListener('DOMContentLoaded', () => {
+  setupPriceFilter();
+});

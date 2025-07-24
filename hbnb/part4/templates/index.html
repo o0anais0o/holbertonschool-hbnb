@@ -7,10 +7,23 @@
   <link rel="stylesheet" href="../static/styles.css" />
 </head>
 <body>
+    <header>
+    <a id="login-link" href="/login">Se connecter</a>
+  </header>
   <main>
     <h1>Bienvenue sur HBNB !</h1>
+    <!-- autres meta et styles ici -->
+      <div>
+    <label for="price-filter">Filtrer par prix :</label>
+    <select id="price-filter">
+      <option value="All" selected>Tous les prix</option>
+      <option value="10">10 €</option>
+      <option value="50">50 €</option>
+      <option value="100">100 €</option>
+    </select>
+  </div>
     <section id="places-list">
-      <!-- Liste des logements (à récupérer avec API + token) -->
+      <!-- Les logements viendront s’afficher ici dynamiquement -->
     </section>
 
     <!-- Bouton déconnexion caché par défaut -->
@@ -34,7 +47,7 @@
           logoutBtn.style.display = 'inline-block';
 
           // Éventuel chargement / affichage de la liste des logements ici
-          placesList.innerHTML = `<p>Voici la liste des logements disponibles (à implémenter).</p>`;
+          loadPlaces();
         } else {
           // Pas connecté, redirection vers login
           window.location.href = 'login.html';
@@ -71,4 +84,3 @@
   <script src="../static/scripts.js"></script>
 </body>
 </html>
-
