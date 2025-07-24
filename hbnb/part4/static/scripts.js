@@ -107,23 +107,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 });
+
 // Variable globale pour garder la liste complète des places
 let allPlaces = [];
 
 // Fonction pour récupérer et afficher la liste des places depuis l'API
 async function loadPlaces() {
   const placesList = document.getElementById('places-list');
-
   try {
-    const response = await fetch('http://localhost:5000/api/v1/places', {
+    const response = await fetch('http://localhost:5000/api/v1/places/', {
       method: 'GET',
       credentials: 'include'  // Important pour envoyer cookie de session
     });
-
     if (!response.ok) {
       throw new Error('Erreur lors de la récupération des places');
     }
-
     const places = await response.json();
     allPlaces = places;
     displayPlaces(allPlaces);
@@ -141,13 +139,14 @@ function displayPlaces(places) {
   places.forEach(place => {
     const placeDiv = document.createElement('div');
     placeDiv.className = 'place-item';
-    placeDiv.dataset.price = place.price_by_night;
+    placeDiv.dataset.price = place.price;
 
     placeDiv.innerHTML = `
-      <h3>${place.name}</h3>
+      <h3>${place.title}</h3>
       <p>${place.description}</p>
       <p>Lieu : ${place.city_name || ''}</p>
-      <p>Prix : ${place.price_by_night}€ / nuit</p>
+      <p>Propriétaire : ${place.owner.first_name} ${place.owner.last_name}</p>
+      <p>Prix : ${place.price}€ / nuit</p>
     `;
     placesList.appendChild(placeDiv);
   });
@@ -161,12 +160,7 @@ function setupPriceFilter() {
 
     const placeElements = document.querySelectorAll('.place-item');
     placeElements.forEach(el => {
-      const price = parseFloat(el.dataset.price);
-      if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
-        el.style.display = 'block';
-      } else {
-        el.style.display = 'none';
-      }
+      el.style.display = (selectedValue === 'All' || price <= parseFloat(selectedValue)) ? 'block' : 'none';
     });
   });
 }
