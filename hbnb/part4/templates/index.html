@@ -1,44 +1,59 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>HBNB - Accueil</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../static/styles.css" />
-</head>
-<body>
-    <header>
-    <a id="login-link" href="http://localhost:5000/login">Se connecter</a>
-  </header>
-  <main>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Holberton HBNB - Accueil</title>
+    <!-- Ajoute ici tes liens CSS, favicon, etc. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+
+  <body>
+
+  <header>
     <h1>Bienvenue sur HBNB !</h1>
-    <!-- autres meta et styles ici -->
-      <div>
-    <label for="price-filter">Filtrer par prix :</label>
-    <select id="price-filter">
-      <option value="All" selected>Tous les prix</option>
-      <option value="10">10 €</option>
-      <option value="50">50 €</option>
-      <option value="100">100 €</option>
-      <option value="150">Jusqu'à 150€</option>
-    </select>
-    <section id="login-section">
+    <!-- Ici tu peux avoir ta barre de navigation -->
+  </header>
+
+  <main>
+
+  <!-- === Section Connexion === -->
+  <section id="login-section" class="section-login" style="margin-bottom: 2em;">
     <h2>Connexion</h2>
     <form id="login-form">
       <input type="email" name="email" placeholder="Email" required />
       <input type="password" name="password" placeholder="Mot de passe" required />
       <button type="submit">Se connecter</button>
-      <span id="login-error" style="color: red;"></span>
+      <br />
+      <span id="login-error" style="color: red; font-weight: bold;"></span>
     </form>
-    </section>
+  </section>
+
+  <!-- === Section Liste des logements === -->
+  <section id="places-list-section">
     <h2>Nos logements disponibles</h2>
+    <!-- Les logements viendront s’afficher ici dynamiquement -->
+
+    <!-- Filtre prix -->
+    <div class="filter-container" style="margin: 1em 0;">
+      <label for="price-filter">Filtrer par prix : </label>
+      <select id="price-filter" name="price-filter">
+        <option value="All" selected>Tous les prix</option>
+        <option value="50">Jusqu'à 50€</option>
+        <option value="100">Jusqu'à 100€</option>
+        <option value="150">Jusqu'à 150€</option>
+        <!-- Tu peux ajouter d’autres options ici -->
+      </select>
+    </div>
+
+    <!-- Conteneur vide où ton JS affichera les places -->
     <div id="places-container"></div>
-  </div>
-    <section id="places-list">
-      <!-- Les logements viendront s’afficher ici dynamiquement -->
-    </section>
+  </section>
+
     <!-- Bouton déconnexion caché par défaut -->
     <button id="logout-btn" style="display:none;">Déconnexion</button>
+
   </main>
 
   <script>
@@ -89,6 +104,10 @@
     });
   </script>
 
-  <script src="../static/scripts.js"></script>
+<footer style="margin-top: 3em; text-align: center;">
+  <p>© Holberton HBNB - 2025</p>
+</footer>
+
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>
