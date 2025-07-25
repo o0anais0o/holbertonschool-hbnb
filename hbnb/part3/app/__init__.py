@@ -13,11 +13,12 @@ def create_app(config_name='default'):
     template_dir = os.path.join(basedir, '../part4/templates')
 
     app = Flask(__name__, template_folder=template_dir)
+    
+    app.config.from_object(config[config_name])
+
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
-    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
-    app.config.from_object(config[config_name])
+   
     app.config['JWT_SECRET_KEY'] = '...secret...'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_SECURE'] = False  # True si https obligatoire ; False pour dev local
@@ -28,9 +29,12 @@ def create_app(config_name='default'):
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
 
-    jwt = JWTManager()
     db.init_app(app)
+    jwt = JWTManager()
     jwt.init_app(app)
+
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
     # Gestion explicite des requêtes OPTIONS (préflight)
     @app.before_request
