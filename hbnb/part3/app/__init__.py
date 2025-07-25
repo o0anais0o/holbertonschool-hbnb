@@ -1,19 +1,20 @@
-from flask_restx import Api
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from app.extensions import db, jwt
 from app.api.v1.auth import auth_bp, web_bp # Import du Blueprint pour les routes web
-import os
+from config import config
+from flask_restx import Api
 
 def create_app(config_name='default'):
-    from config import config
     basedir = os.path.abspath(os.path.dirname(__file__))
     # Passe un chemin absolu vers hbnb/part4/templates
     template_dir = os.path.join(basedir, '../part4/templates')
 
     app = Flask(__name__, template_folder=template_dir)
-    
+
+    # Charger la config (ex : JWT_SECRET_KEY, DB URI, etc.)  
     app.config.from_object(config[config_name])
 
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
@@ -29,10 +30,13 @@ def create_app(config_name='default'):
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
 
+    # Initialisation des extensions Flask
     db.init_app(app)
-    jwt = JWTManager()
-    jwt.init_app(app)
 
+    jwt = JWTManager()         # création de l'instance JWTManager
+    jwt.init_app(app)          # lien avec l'app Flask
+
+    # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
