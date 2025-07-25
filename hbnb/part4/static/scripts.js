@@ -153,29 +153,35 @@ function displayPlaces(places) {
 }
 
 // Gestion du filtre prix côté client
-function setupPriceFilter() {
-  console.log('setupPriceFilter called');
-  const priceFilter = document.getElementById('price-filter');
-  if (!priceFilter) {
-    console.error('Element #price-filter not found in DOM!');
-    return;
-  }
-  priceFilter.addEventListener('change', () => {
-    const selectedValue = priceFilter.value;
-    const placeElements = document.querySelectorAll('.place-item');
-    placeElements.forEach(el => {
-    const price = parseFloat(el.dataset.price);
-    if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
-        el.style.display = 'block';
-      } else {
-        el.style.display = 'none';
-      }
-    });
-  });
-}
+document.addEventListener('DOMContentLoaded', function() {
+  // Tout ce code ici s'exécute uniquement quand le DOM est prêt
 
-// Initialise le filtre au chargement du script
-document.addEventListener('DOMContentLoaded', () => {
+  // Définition de la fonction setupPriceFilter
+  function setupPriceFilter() {
+    const priceFilter = document.getElementById('price-filter');
+    if (!priceFilter) {
+      console.error('Element #price-filter not found in DOM!');
+      return;
+    }
+
+    priceFilter.addEventListener('change', () => {
+      const selectedValue = priceFilter.value;
+      const placeElements = document.querySelectorAll('.place-item');
+      placeElements.forEach(el => {
+        const price = parseFloat(el.dataset.price);
+        if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
+          el.style.display = 'block';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  // Ici tu peux appeler ta fonction pour initialiser le filtre
   setupPriceFilter();
-  loadPlaces();  // on charge et affiche les places au chargement de la page
+
+  // Et charger les places (fonction que tu as dans ton code)
+  loadPlaces();
+
 });
