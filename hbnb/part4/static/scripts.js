@@ -178,8 +178,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Ici tu peux appeler ta fonction pour initialiser le filtre
-  setupPriceFilter();
+// Fonction pour gérer le filtre prix
+function setupPriceFilter() {
+  console.log('setupPriceFilter called');
+  const priceFilter = document.getElementById('price-filter');
+  if (!priceFilter) {
+    console.error('Element #price-filter not found in DOM!');
+    return;
+  }
+
+  priceFilter.addEventListener('change', () => {
+    const selectedValue = priceFilter.value;
+    console.log(`Price filter changed to: ${selectedValue}`);
+
+    const placeElements = document.querySelectorAll('.place-item');
+    placeElements.forEach(el => {
+      const priceAttr = el.dataset.price;
+      const price = parseFloat(priceAttr);
+
+      if (isNaN(price)) {
+        el.style.display = 'block';
+        return;
+      }
+
+      if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  });
+}
 
   // Et charger les places (fonction que tu as dans ton code)
   loadPlaces();
