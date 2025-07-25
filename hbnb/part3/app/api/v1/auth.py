@@ -32,8 +32,12 @@ def logout():
 
 @auth_bp.route('/status', methods=['GET'])
 def status():
-    # status session
-    pass
+    # vérification d'authentification
+    user = get_current_user()  # ta fonction hypothétique
+    if user:
+        return jsonify({"authenticated": True, "user": user.username}), 200
+    else:
+        return jsonify({"authenticated": False}), 401
 
 # Route POST pour /auth/login pour effectuer la connexion
 @api.route('/login', '/login/')
