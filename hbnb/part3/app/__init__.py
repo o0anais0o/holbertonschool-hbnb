@@ -14,6 +14,7 @@ def create_app(config_name='default'):
     app = Flask(__name__, template_folder=template_dir)
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000"])
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
     app.config.from_object(config[config_name])
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
