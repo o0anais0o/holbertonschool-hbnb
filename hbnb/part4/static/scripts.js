@@ -1,158 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
-    const errorSpan = document.getElementById('login-error');
+// Ce fichier gère :
+// - le filtre prix sur la page index
+// - le chargement dynamique des places depuis le backend
+// - le formulaire de connexion (login) avec gestion des erreurs affichées
+// - la vérification du statut d'authentification
+// - tout est executé après chargement complet du DOM
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            // Récupérer les valeurs depuis le formulaire
-            const email = document.querySelector('[name="email"]').value;
-            const password = document.querySelector('[name="password"]').value;
-
-            // Nettoyer le message d'erreur
-            if (errorSpan) errorSpan.textContent = "";
-
-            try {
-                // Envoi de la requête POST au endpoint login
-                const response = await fetch('http://localhost:5000/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({email, password}),
-                    credentials: 'include'  // <- important pour cookies
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-
-                    // Si on stockes le token côté backend HttpOnly, on n'as pas besoin de le stocker ici en JS
-                    // Sinon, utiliser token côté JS, stocke ici
-                    // Ici on suppose que le token est stocké dans cookie HttpOnly, donc on peut commenter ou supprimer la ligne suivante :
-                    // document.cookie = `token=${data.access_token}; path=/; SameSite=Strict;`;
-
-                    console.log('Connexion réussie, token stocké.');
-
-                    // Rediriger vers la page principale
-                    window.location.href = 'index.html';
-                } else {
-                    const errorData = await response.json();
-                    if (errorSpan) {
-                        errorSpan.textContent = errorData.error || 'Erreur de connexion.';
-                    } else {
-                        alert(errorData.error || 'Erreur de connexion.');
-                    }
-                }
-            } catch (err) {
-                if (errorSpan) {
-                    errorSpan.textContent = "Impossible de contacter le serveur.";
-                } else {
-                    alert("Impossible de contacter le serveur.");
-                }
-            }
-        });
-    }
-
-    // Fonction logout
-    async function logout() {
-        try {
-            const response = await fetch('http://localhost:5000/api/v1/auth/logout', {
-                method: 'POST',
-                credentials: 'include',  // très important pour envoyer les cookies
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                // Rediriger vers la page de login
-                window.location.href = 'login.html';
-            } else {
-                console.error('Erreur lors de la déconnexion');
-            }
-        } catch (error) {
-            console.error('Erreur réseau lors de la déconnexion:', error);
-        }
-    }
-
-    // Attachement au bouton logout si présent
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
-    }
-
-  // Vérifie si utilisateur connecté via /auth/status
-  // Ceci contrôle l’affichage du bouton logout et évite l’accès index si non connecté
-  (async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/v1/auth/status', {
-        method: 'GET',
-        credentials: 'include'  // Envoi obligatoire du cookie JWT HttpOnly
-      });
-      if (response.ok) {
-        // Connecté : affiche bouton déconnexion
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) logoutBtn.style.display = 'inline-block';
-      } else {
-        // Non connecté : redirige vers login
-        if (window.location.pathname.endsWith('index.html')) {
-          window.location.href = 'login.html';
-        }
-      }
-    } catch (error) {
-      console.error('Erreur lors de la vérification du statut login:', error);
-      // En cas d’erreur réseau, on part aussi sur login.html
-      if (window.location.pathname.endsWith('index.html')) {
-        window.location.href = 'login.html';
-      }
-    }
-  })();
-});
-
-// Variable globale pour garder la liste complète des places
-let allPlaces = [];
-
-// Fonction pour récupérer et afficher la liste des places depuis l'API
-async function loadPlaces() {
-  const placesList = document.getElementById('places-list');
-  try {
-    const response = await fetch('http://localhost:5000/api/v1/places/', {
-      method: 'GET',
-      credentials: 'include'  // Important pour envoyer cookie de session
-    });
-    if (!response.ok) {
-      throw new Error('Erreur lors de la récupération des places');
-    }
-    const places = await response.json();
-    allPlaces = places;
-    displayPlaces(allPlaces);
-  } catch (error) {
-    placesList.innerHTML = `<p>Erreur lors du chargement des logements.</p>`;
-    console.error(error);
-  }
-}
-
-// Fonction pour afficher les places dans le DOM
-function displayPlaces(places) {
-  const placesList = document.getElementById('places-list');
-  placesList.innerHTML = '';
-
-  places.forEach(place => {
-    const placeDiv = document.createElement('div');
-    placeDiv.className = 'place-item';
-    placeDiv.dataset.price = place.price;
-
-    placeDiv.innerHTML = `
-      <h3>${place.title}</h3>
-      <p>${place.description}</p>
-      <p>Lieu : ${place.city_name || ''}</p>
-      <p>Propriétaire : ${place.owner.first_name} ${place.owner.last_name}</p>
-      <p>Prix : ${place.price}€ / nuit</p>
-    `;
-    placesList.appendChild(placeDiv);
-  });
-}
-
-// Fonction pour gérer le filtre prix côté client
+//-------------------------------------------------------
+// Gestion du filtre prix côté client
 function setupPriceFilter() {
   console.log('setupPriceFilter called');
   const priceFilter = document.getElementById('price-filter');
@@ -184,22 +38,135 @@ function setupPriceFilter() {
   });
 }
 
-// Fonction pour charger les places (à adapter selon ton code)
-function loadPlaces() {
-  // Exemple : fetch des places, création éléments DOM avec classe '.place-item' et data-price ...
-  // Ton code réel ici
+//-------------------------------------------------------
+// Chargement dynamique de la liste des places depuis backend
+async function loadPlaces() {
+  console.log('loadPlaces called');
+  try {
+    const response = await fetch('http://localhost:5000/api/v1/places/', {
+      method: 'GET',
+      credentials: 'include'  // Indispensable pour les cookies JWT
+    });
+
+    if (!response.ok) {
+      console.error('Erreur lors du chargement des places:', response.status);
+      return;
+    }
+
+    const places = await response.json();
+
+    // Conteneur où on injecte la liste
+    const placesContainer = document.getElementById('places-container');
+    if (!placesContainer) {
+      console.error('Element #places-container not found in DOM!');
+      return;
+    }
+    placesContainer.innerHTML = '';  // Vide le contenu avant ajout des places
+
+    places.forEach(place => {
+      const placeDiv = document.createElement('div');
+      placeDiv.classList.add('place-item');      // Classe css nécessaire au filtre
+      placeDiv.dataset.price = place.price;      // data-price utilisé dans setupPriceFilter
+
+      // Affichage complet des infos de la place (titre, description, lieu, propriétaire, prix)
+      placeDiv.innerHTML = `
+        <h3>${place.title || place.name || 'Titre non défini'}</h3>
+        <p>${place.description || 'Pas de description disponible.'}</p>
+        <p>Lieu : ${place.city_name || ''}</p>
+        <p>Propriétaire : ${place.owner?.first_name || ''} ${place.owner?.last_name || ''}</p>
+        <p>Prix : ${place.price} € / nuit</p>
+      `;
+
+      placesContainer.appendChild(placeDiv);
+    });
+
+    // Applique le filtre prix automatiquement une fois tout affiché
+    const priceFilter = document.getElementById('price-filter');
+    if (priceFilter) {
+      priceFilter.dispatchEvent(new Event('change'));
+    }
+
+  } catch (error) {
+    console.error('Erreur fetch loadPlaces:', error);
+  }
 }
 
-// --- Initialisation après chargement complet du DOM ---
+//-------------------------------------------------------
+// Gestion du formulaire de connexion utilisateur
+async function loginUser(email, password) {
+  const errorSpan = document.getElementById('login-error');
+  if (errorSpan) errorSpan.textContent = '';  // Reset message erreur
 
-document.addEventListener('DOMContentLoaded', () => {
-  setupPriceFilter();  // Initialisation du filtre prix
+  try {
+    const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    });
 
-  loadPlaces();        // Charge et affiche les places
-
-  // Appliquer immédiatement le filtre (utile si loadPlaces charge les éléments synchrones)
-  const priceFilter = document.getElementById('price-filter');
-  if (priceFilter) {
-    priceFilter.dispatchEvent(new Event('change'));
+    if (response.ok) {
+      console.log('Login réussi');
+      if (errorSpan) errorSpan.textContent = '';
+      // Recharge la liste des places pour afficher l’utilisateur connecté
+      await loadPlaces();
+      // TODO : tu peux ici cacher le formulaire login ou faire une redirection avec window.location = ...
+    } else {
+      console.error('Login échoué :', response.status);
+      if (errorSpan) errorSpan.textContent = 'Échec de connexion : identifiants invalides.';
+      else alert('Échec de connexion : identifiants invalides.');
+    }
+  } catch (error) {
+    console.error('Erreur lors du login:', error);
+    if (errorSpan) errorSpan.textContent = 'Erreur réseau, impossible de contacter le serveur.';
+    else alert('Erreur réseau, impossible de contacter le serveur.');
   }
+}
+
+//-------------------------------------------------------
+// Vérification optionnelle du statut de connexion utilisateur
+async function checkLoginStatus() {
+  try {
+    const response = await fetch('http://localhost:5000/api/v1/auth/status', {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Utilisateur connecté:', data);
+      // TODO : Modifie ton DOM ici si tu veux afficher que l'utilisateur est connecté
+    } else {
+      console.log('Utilisateur non connecté:', response.status);
+    }
+  } catch (error) {
+    console.error('Erreur vérification statut login:', error);
+  }
+}
+
+//-------------------------------------------------------
+// Initialisation de l’ensemble du script une fois le DOM chargé
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Initialise le filtre prix sur la page
+  setupPriceFilter();
+
+  // Vérifie si un utilisateur est connecté puis charge les places
+  checkLoginStatus().then(() => {
+    loadPlaces();
+  });
+
+  // Gestion du formulaire login
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = loginForm.querySelector('input[name="email"]').value;
+      const password = loginForm.querySelector('input[name="password"]').value;
+      loginUser(email, password);
+    });
+  } else {
+    console.warn('Formulaire login (#login-form) non trouvé dans le DOM');
+  }
+
 });
