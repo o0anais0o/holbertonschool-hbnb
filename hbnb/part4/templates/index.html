@@ -20,12 +20,23 @@
       <option value="10">10 €</option>
       <option value="50">50 €</option>
       <option value="100">100 €</option>
+      <option value="150">Jusqu'à 150€</option>
     </select>
+    <section id="login-section">
+    <h2>Connexion</h2>
+    <form id="login-form">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+      <span id="login-error" style="color: red;"></span>
+    </form>
+    </section>
+    <h2>Nos logements disponibles</h2>
+    <div id="places-container"></div>
   </div>
     <section id="places-list">
       <!-- Les logements viendront s’afficher ici dynamiquement -->
     </section>
-
     <!-- Bouton déconnexion caché par défaut -->
     <button id="logout-btn" style="display:none;">Déconnexion</button>
   </main>
