@@ -62,6 +62,10 @@ def create_app(config_name='default'):
         }
     }
 
+    @app.route('/')   # Définition de la route racine
+    def accueil():
+        return '<h1>Holberton HBNB API</h1>'
+    
     api = Api(
         app,
         version='1.0',
