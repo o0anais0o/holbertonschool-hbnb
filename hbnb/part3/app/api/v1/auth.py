@@ -1,9 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from flask import jsonify
-from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity, decode_access_token)
+from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity)
 from app.services.facade import HBnBFacade
-from flask import Blueprint, jsonify, render_template # Import pour les routes web
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, jsonify, render_template, request # Import pour les routes web
 from werkzeug.security import check_password_hash
 from app.models.user import User
 
@@ -71,21 +70,13 @@ def logout():
 
 
 @auth_bp.route('/status', methods=['GET'])
+@jwt_required()
 def status():
-    """
-    Vérifie si l'utilisateur est authentifié via cookie ou autre.
-    Retourne le statut et infos utilisateur si authentifié.
-    """
-
-    access_token = request.cookies.get('access_token')
-    if not access_token:
+    current_user_id = get_jwt_identity()
+    if not current_user_id:
         return jsonify({"authenticated": False}), 401
 
-    user_id = decode_access_token(access_token)
-    if not user_id:
-        return jsonify({"authenticated": False}), 401
-
-    user = User.query.get(user_id)
+    user = User.query.get(current_user_id)
     if not user:
         return jsonify({"authenticated": False}), 401
 
