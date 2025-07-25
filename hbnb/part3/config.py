@@ -1,11 +1,12 @@
 class Config:
-    SECRET_KEY = 'dev'  # À sécuriser en prod
+    SECRET_KEY =  'ma_cle_secrete_flask_2025'       # clé Flask (session, CSRF)
     SQLALCHEMY_DATABASE_URI = 'sqlite:///hbnb.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = 'jwt-secret'       #  clé secrète là où elle est déjà
-    JWT_TOKEN_LOCATION = ['cookies']    # Token JWT stocké dans les cookies
-    JWT_COOKIE_SECURE = False           # False car dev sans HTTPS
-    JWT_COOKIE_CSRF_PROTECT = False     # Désactive CSRF pour commencer, puis a activer plus tard
+    JWT_SECRET_KEY = 'ma_cle_jwt_secrete_2025'      # clé JWT spécifique
+    JWT_TOKEN_LOCATION = ['cookies']                # Token JWT stocké dans les cookies
+    JWT_COOKIE_SECURE = False                       # Pas de HTTPS en dev
+    JWT_COOKIE_CSRF_PROTECT = False                 # CSRF désactivé pour test, puis a activer plus tard
+    JWT_ACCESS_COOKIE_PATH = '/'
 
 class DevelopmentConfig(Config):
     DEBUG = True

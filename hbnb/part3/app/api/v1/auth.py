@@ -57,7 +57,6 @@ def login():
 
     return response, 200
 
-
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
     """
@@ -67,7 +66,6 @@ def logout():
     # Supprime le cookie
     response.delete_cookie('access_token')
     return response, 200
-
 
 @auth_bp.route('/status', methods=['GET'])
 @jwt_required()
@@ -136,11 +134,10 @@ class Logout(Resource):
         # Renvoie la réponse
         return resp
 
-
 # Route GET pour /auth/status afin de vérifier si l'utilisateur est connecté via JWT
 @api.route('/status', '/status/')
 class Status(Resource):
-    @jwt_required()  # Cette route ne répond que si token JWT valide est présent (dans cookie)
+    @jwt_required(locations=["cookies"])  # Cette route ne répond que si token JWT valide est présent (dans cookie)
     def get(self):
         # Récupère l'identité de l'utilisateur du token (ex: user.id)
         current_user = get_jwt_identity()
