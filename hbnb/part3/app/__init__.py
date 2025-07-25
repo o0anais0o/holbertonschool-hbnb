@@ -6,6 +6,7 @@ from app.extensions import db, jwt
 def create_app(config_name='default'):
     from config import config
 
+    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
@@ -55,6 +56,7 @@ def create_app(config_name='default'):
     from app.api.v1.amenities import api as amenities_ns
     from app.api.v1.reviews import api as reviews_ns
     from app.api.v1.auth import api as auth_ns
+    from app.api.v1.auth import web_bp # Import du Blueprint pour les routes web
 
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(places_ns, path='/api/v1/places')

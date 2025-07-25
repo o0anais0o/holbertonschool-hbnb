@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import jsonify
 from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity)
 from app.services.facade import HBnBFacade
+from flask import Blueprint, render_template # Import pour les routes web
 
 # Création d’un namespace RESTX pour organiser les routes liées à l’authentification
 api = Namespace('auth', description='Auth operations')
@@ -75,4 +76,10 @@ class Status(Resource):
 
         # Renvoie la réponse JSON confirmant l'utilisateur connecté
         return jsonify({'logged_in_as': current_user})
-    
+
+web_bp = Blueprint('web', __name__) # Blueprint pour les routes web
+
+@web_bp.route('/login', methods=['GET'])
+def login_form():
+    # Affiche la page de login HTML !
+    return render_template('login.html')
