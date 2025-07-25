@@ -7,21 +7,19 @@ import os
 def create_app(config_name='default'):
     from config import config
 
-    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
     basedir = os.path.abspath(os.path.dirname(__file__))
     # Passe un chemin absolu vers hbnb/part4/templates
     template_dir = os.path.join(basedir, '../part4/templates')
     app = Flask(__name__, template_folder=template_dir)
+    # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
+    CORS(app, supports_credentials=True, origins=["http://localhost:8000"])
+    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
     app.config.from_object(config[config_name])
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
 
     db.init_app(app)
     jwt.init_app(app)
-
-    # CORS global, avec support des credentials (cookies, auth)
-    # et autorisation exacte de l'origine frontend http://localhost:8000
-    CORS(app, supports_credentials=True, origins=["http://localhost:8000"])
 
     # Gestion explicite des requêtes OPTIONS (préflight)
     @app.before_request
