@@ -2,12 +2,16 @@ from flask_restx import Api
 from flask import Flask, jsonify
 from flask_cors import CORS
 from app.extensions import db, jwt
+import os
 
 def create_app(config_name='default'):
     from config import config
 
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
-    app = Flask(__name__)
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    # Passe un chemin absolu vers hbnb/part4/templates
+    template_dir = os.path.join(basedir, '../part4/templates')
+    app = Flask(__name__, template_folder=template_dir)
     app.config.from_object(config[config_name])
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
