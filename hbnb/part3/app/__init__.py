@@ -73,7 +73,10 @@ def create_app(config_name='default'):
         security='Bearer Auth'
     )
 
-    api_restx.add_namespace(api, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
+    api_restx = Api(app, doc='/api/v1/')
+
+    api_restx.add_namespace(auth_ns, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
+    api_restx.add_namespace(users_ns, path='/api/v1/users')
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
