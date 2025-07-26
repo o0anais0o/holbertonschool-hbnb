@@ -56,7 +56,8 @@ function setupPriceFilter() {
         return;
       }
 
-      if (selectedValue === 'All' || price <= parseFloat(selectedValue)) {
+      if (selectedValue.toLowerCase() === 'all' || price <= parseFloat(selectedValue)) {
+
         el.style.display = 'block';
       } else {
         el.style.display = 'none';
