@@ -12,7 +12,7 @@ def create_app(config_name='default'):
     # Passe un chemin absolu vers hbnb/part4/templates
     template_dir = os.path.join(basedir, '../part4/templates')
 
-    app = Flask(__name__, template_folder='../../part4/templates')
+    app = Flask(__name__, template_folder=template_dir)
 
     # Charger la config (ex : JWT_SECRET_KEY, DB URI, etc.)  
     app.config.from_object(config[config_name])
