@@ -28,15 +28,6 @@ def create_app(config_name='default'):
 
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
-    
-    # Import du Blueprint pour les routes web
-    from app.api.v1.auth import api, auth_bp, web_bp
-    
-    api_restx = Api(app, doc='/api/doc') # Crée une seule instance Api attachée à l’app
-    api_restx.add_namespace(api, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
-
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
-    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
     app.config['JWT_SECRET_KEY'] = '...secret...'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
@@ -60,6 +51,9 @@ def create_app(config_name='default'):
             response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
+        
+    # Import du Blueprint pour les routes web
+    from app.api.v1.auth import api, auth_bp, web_bp
 
     authorizations = {
         'Bearer Auth': {
@@ -79,6 +73,11 @@ def create_app(config_name='default'):
         authorizations=authorizations,
         security='Bearer Auth'
     )
+
+    api_restx.add_namespace(api, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
+
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
+    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
     from app.api.v1.users import api as users_ns
     from app.api.v1.places import api as places_ns
