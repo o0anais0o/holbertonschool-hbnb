@@ -53,6 +53,10 @@ def create_app(config_name='default'):
             return response
 
     from app.api.v1.auth import api as auth_ns, auth_bp, web_bp # Import du Blueprint pour les routes web
+    from app.api.v1.users import api as users_ns
+    from app.api.v1.places import api as places_ns
+    from app.api.v1.amenities import api as amenities_ns
+    from app.api.v1.reviews import api as reviews_ns
 
     authorizations = {
         'Bearer Auth': {
@@ -73,22 +77,13 @@ def create_app(config_name='default'):
         security='Bearer Auth'
     )
 
-    api_restx.add_namespace(auth_ns, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
+    api_restx.add_namespace(auth_ns, path='/api/v1/auth')
     api_restx.add_namespace(users_ns, path='/api/v1/users')
+    api_restx.add_namespace(places_ns, path='/api/v1/places')
+    api_restx.add_namespace(reviews_ns, path='/api/v1/reviews')
+    api_restx.add_namespace(amenities_ns, path='/api/v1/amenities')
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
-
-    from app.api.v1.users import api as users_ns
-    from app.api.v1.places import api as places_ns
-    from app.api.v1.amenities import api as amenities_ns
-    from app.api.v1.reviews import api as reviews_ns
-    from app.api.v1.auth import api as auth_ns, auth_bp, web_bp
-
-    api.add_namespace(users_ns, path='/api/v1/users')
-    api.add_namespace(places_ns, path='/api/v1/places')
-    api.add_namespace(amenities_ns, path='/api/v1/amenities')
-    api.add_namespace(reviews_ns, path='/api/v1/reviews')
-    api.add_namespace(auth_ns, path='/api/v1/auth')
 
     return app
