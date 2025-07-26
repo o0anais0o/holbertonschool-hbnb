@@ -52,7 +52,7 @@ def create_app(config_name='default'):
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
 
-    from app.api.v1.auth import api, auth_bp, web_bp # Import du Blueprint pour les routes web
+    from app.api.v1.auth import api as auth_ns, auth_bp, web_bp # Import du Blueprint pour les routes web
 
     authorizations = {
         'Bearer Auth': {
