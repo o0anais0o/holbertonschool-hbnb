@@ -1,3 +1,10 @@
+# Ce que fait ce fichier (respecter cette ordre):
+# 1.Créer l’app
+# 2.Configurer l’app (+ extensions)
+# 3.Créer l’API Flask-RESTx avec Api(app)
+# 4.Ajouter les namespaces
+# 5.Enregistrer les blueprints (routes classiques)
+# 6.Retourner l’app
 import os
 from flask_cors import CORS
 from flask_restx import Api
@@ -23,7 +30,9 @@ def create_app(config_name='default'):
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
     
     # Import du Blueprint pour les routes web
-    from app.api.v1.auth import auth_ns, auth_bp, web_bp 
+    from app.api.v1.auth import api, auth_bp, web_bp
+    api_restx = Api(app) # Création de l'instance Api Flask-RESTx liée à app
+    api_restx.add_namespace(api, path='/api/v1/auth') # Ajout de la namespace 'api' à l'API Flask-RESTx, sur la route '/api/v1/auth'
 
     app.config['JWT_SECRET_KEY'] = '...secret...'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
