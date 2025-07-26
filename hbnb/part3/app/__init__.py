@@ -1,11 +1,10 @@
 import os
-from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from app.extensions import db, jwt
-from app.api.v1.auth import auth_bp, web_bp # Import du Blueprint pour les routes web
-from config import config
 from flask_restx import Api
+from flask import Flask, jsonify
+from flask_jwt_extended import JWTManager
+from config import config
+from app.extensions import db, jwt
 
 def create_app(config_name='default'):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -20,6 +19,8 @@ def create_app(config_name='default'):
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
    
+    from app.api.v1.auth import auth_ns, auth_bp, web_bp # Import du Blueprint pour les routes web
+
     app.config['JWT_SECRET_KEY'] = '...secret...'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_SECURE'] = False  # True si https obligatoire ; False pour dev local
