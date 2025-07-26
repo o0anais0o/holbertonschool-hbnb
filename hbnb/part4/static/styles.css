@@ -99,7 +99,25 @@ h3 {
     color: #555;
 }
 
-.details-button, button, input[type=submit] {
+.login-button { /* Bouton de connexion en haut a gauche a tester */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 11px 30px; /* 8px 12px; */
+  background-color: #FF385C;
+  color: white;
+  text-decoration: none;
+  border-radius: 22px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.login-button:hover, button:hover, input[type=submit]:hover { /* Ajout d'un effet de survol */
+    background: #d91243;
+    box-shadow: 0 3px 10px rgba(255,56,92,0.16);
+    transform: translateY(-2px);
+}
+
+.details-button, button, input[type=submit] { /* Bouton du formulaire de connection */
     background: #FF385C;
     color: #fff;
     border: none;
