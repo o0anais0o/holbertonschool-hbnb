@@ -32,7 +32,7 @@ def create_app(config_name='default'):
     # Import du Blueprint pour les routes web
     from app.api.v1.auth import api, auth_bp, web_bp
     
-    api_restx = Api(app) # Crée l'instance unique Api Flask-RESTx
+    api_restx = Api(app, doc='/api/doc') # Crée une seule instance Api attachée à l’app
     api_restx.add_namespace(api, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
