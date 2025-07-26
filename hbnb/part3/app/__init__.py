@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_restx import Api
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
+
 from app.extensions import db, jwt
 
 def create_app(config_name='default'):
