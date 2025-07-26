@@ -7,9 +7,9 @@
 # 6.Retourner l’app
 import os
 from flask_cors import CORS
-from flask_restx import Api
 from flask import Flask, jsonify
 from app.extensions import db, jwt
+from flask_restx import Api
 
 def create_app(config_name='default'):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -51,9 +51,8 @@ def create_app(config_name='default'):
             response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
-        
-    # Import du Blueprint pour les routes web
-    from app.api.v1.auth import api, auth_bp, web_bp
+
+    from app.api.v1.auth import api, auth_bp, web_bp # Import du Blueprint pour les routes web
 
     authorizations = {
         'Bearer Auth': {
@@ -64,7 +63,7 @@ def create_app(config_name='default'):
         }
     }
 
-    api = Api(
+    api_restx = Api(
         app,
         version='1.0',
         title='HBNB API',
