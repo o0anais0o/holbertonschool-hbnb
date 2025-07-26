@@ -227,12 +227,17 @@ async function checkLoginStatus() {
     if (response.ok) {
       const data = await response.json();
       console.log('Utilisateur connecté:', data);
-      // TODO : Modifie ton DOM ici si tu veux afficher que l'utilisateur est connecté
+      // Affiche les infos utilisateur connectés, modifie le DOM
+      showUserConnected(data);
     } else {
       console.log('Utilisateur non connecté:', response.status);
+      // Ne redirige plus vers login, affiche simplement bouton/lien Login
+      showLoginLink();
     }
   } catch (error) {
     console.error('Erreur vérification statut login:', error);
+    // Ne redirige pas, affiche bouton login
+    showLoginLink();
   }
 }
 

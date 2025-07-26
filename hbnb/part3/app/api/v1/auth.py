@@ -85,3 +85,7 @@ web_bp = Blueprint('web', __name__) # Blueprint pour les routes web
 def login_form():
     # Affiche la page de login HTML !
     return render_template('login.html')
+
+@web_bp.route('/')
+def index():
+    return render_template('index.html')
