@@ -2,8 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import jsonify
 from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity)
 from app.services.facade import HBnBFacade
-from flask import Blueprint, jsonify, render_template, request # Import pour les routes web
-from werkzeug.security import check_password_hash
+from flask import Blueprint, jsonify, render_template # Import pour les routes web
 from app.models.user import User
 
 # Création d’un namespace RESTX pour organiser les routes liées à l’authentification
@@ -21,71 +20,6 @@ error_model = api.model('Error', {
 })
 
 auth_bp = Blueprint('auth', __name__)
-
-# Exemple simple de stockage en "mémoire" (à remplacer par ta base de données réelle)
-# Ici on suppose que User.query.filter_by(email=...) retourne un user avec pwd hashé
-
-@auth_bp.route('/login', methods=['POST'])
-def login():
-    """
-    Reçoit JSON avec email et password,
-    vérifie les identifiants, crée un token (JWT ou session),
-    renvoie un cookie ou réponse json.
-    """
-
-    data = request.get_json()
-    if not data or 'email' not in data or 'password' not in data:
-        return jsonify({"error": "email and password required"}), 400
-
-    email = data['email']
-    password = data['password']
-
-    user = User.query.filter_by(email=email).first()
-
-    if user is None:
-        return jsonify({"error": "Invalid credentials"}), 401
-
-    if not check_password_hash(user.password_hash, password):
-        return jsonify({"error": "Invalid credentials"}), 401
-
-    # Ici tu peux créer un token JWT (par ex) :
-    access_token = create_access_token(identity=user.id)
-
-    response = jsonify({"message": "login successful"})
-    # Exemple : stocke le token dans un cookie HttpOnly
-    response.set_cookie('access_token', access_token, httponly=True, samesite='Lax')
-
-    return response, 200
-
-@auth_bp.route('/logout', methods=['POST'])
-def logout():
-    """
-    Déconnecte l'utilisateur en supprimant le cookie ou token côté client.
-    """
-    response = jsonify({"message": "logout successful"})
-    # Supprime le cookie
-    response.delete_cookie('access_token')
-    return response, 200
-
-@auth_bp.route('/status', methods=['GET'])
-@jwt_required()
-def status():
-    current_user_id = get_jwt_identity()
-    if not current_user_id:
-        return jsonify({"authenticated": False}), 401
-
-    user = User.query.get(current_user_id)
-    if not user:
-        return jsonify({"authenticated": False}), 401
-
-    return jsonify({
-        "authenticated": True,
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "name": user.name
-        }
-    }), 200
 
 # Route POST pour /auth/login pour effectuer la connexion
 @api.route('/login', '/login/')

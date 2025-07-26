@@ -36,8 +36,7 @@ def create_app(config_name='default'):
     jwt = JWTManager()         # création de l'instance JWTManager
     jwt.init_app(app)          # lien avec l'app Flask
 
-    # Enregistre tes blueprints dans l'app Flask
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
     # Gestion explicite des requêtes OPTIONS (préflight)
