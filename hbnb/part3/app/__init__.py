@@ -10,8 +10,10 @@ from flask_cors import CORS
 from flask import Flask, jsonify
 from app.extensions import db, jwt
 from flask_restx import Api
+from flask import render_template, Blueprint
 
 def create_app(config_name='default'):
+    
     basedir = os.path.abspath(os.path.dirname(__file__))
     # Passe un chemin absolu vers hbnb/part4/templates
     template_dir = os.path.abspath(os.path.join(basedir, '../../part4/templates'))
@@ -51,6 +53,13 @@ def create_app(config_name='default'):
             response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
+
+    web_bp = Blueprint('web', __name__, template_folder='../../part4/templates')
+
+    @web_bp.route('/templates/index.html')
+    def index():
+        # Page d'accueil publique, accessible par tous
+        return render_template('index.html')
 
     from app.api.v1.auth import api as auth_ns, auth_bp, web_bp # Import du Blueprint pour les routes web
     from app.api.v1.users import api as users_ns
