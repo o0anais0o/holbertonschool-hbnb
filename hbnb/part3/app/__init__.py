@@ -31,8 +31,12 @@ def create_app(config_name='default'):
     
     # Import du Blueprint pour les routes web
     from app.api.v1.auth import api, auth_bp, web_bp
-    api_restx = Api(app) # Création de l'instance Api Flask-RESTx liée à app
-    api_restx.add_namespace(api, path='/api/v1/auth') # Ajout de la namespace 'api' à l'API Flask-RESTx, sur la route '/api/v1/auth'
+    
+    api_restx = Api(app) # Crée l'instance unique Api Flask-RESTx
+    api_restx.add_namespace(api, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
+
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
+    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
     app.config['JWT_SECRET_KEY'] = '...secret...'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
@@ -43,9 +47,6 @@ def create_app(config_name='default'):
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # désactive CSRF pour debugger (sinon config CSRF)
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
-
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
-    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
     # Gestion explicite des requêtes OPTIONS (préflight)
     @app.before_request
