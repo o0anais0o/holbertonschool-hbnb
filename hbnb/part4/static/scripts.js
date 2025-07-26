@@ -1,14 +1,14 @@
 // Ce fichier gère :
-// - obtenir un cookie par son nom
-// - vérifie si l'utilisateur est authentifié
-// - le filtre prix sur la page index
-// - affiche les places dans le DOM
-// - Tableau pour stocker toutes les places
-// - Fonction applyPriceFilter() pour appliquer le filtre de prix
-// - le chargement dynamique des places depuis le backend
-// - le formulaire de connexion (login) avec gestion des erreurs affichées
-// - la vérification du statut d'authentification
-// - tout est executé après chargement complet du DOM
+// - getCookie(name) Obtenir un cookie par son nom 
+// - checkAuthentication() Vérifie si l'utilisateur est authentifié
+// - setupPriceFilter() Gestion du filtre prix côté client
+// - fetchPlaces(token) Affiche les places dans le DOM
+// - displayPlaces(places) Tableau pour stocker toutes les places
+// - applyPriceFilter() Applique le filtre de prix
+// - loadPlaces() Charge dynamiquement les places depuis le backend
+// - loginUser(email, password) formulaire de connexion (login) avec gestion des erreurs affichées
+// - checkLoginStatus() vérification du statut d'authentification
+// - Initialisation de l’ensemble du script une fois le DOM chargé
 
 //-------------------------------------------------------
 // Fonction utilitaire pour obtenir un cookie par son nom
@@ -69,7 +69,7 @@ function setupPriceFilter() {
 // Fonction pour afficher les places dans le DOM
 async function fetchPlaces(token) {
   try {
-    const response = await fetch('http://localhost:5001/api/v1/places', {
+    const response = await fetch('http://localhost:5000/api/v1/places', {
       method: 'GET',
       headers: {
         'Authorization': token ? `Bearer ${token}` : ''
@@ -81,7 +81,9 @@ async function fetchPlaces(token) {
     const data = await response.json();
     displayPlaces(data);
   } catch (error) {
-    alert('Impossible de charger les places. Détail : ' + error.message);
+    const placesList = document.getElementById('places-list');
+    placesList.innerHTML = `<p style="color: red;">Erreur: impossible de charger les logements.</p>`;
+    console.error(error);
   }
 }
 
