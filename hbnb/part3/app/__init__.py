@@ -3,7 +3,6 @@ from flask_cors import CORS
 from flask_restx import Api
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
-from config import config
 from app.extensions import db, jwt
 
 def create_app(config_name='default'):
@@ -13,13 +12,20 @@ def create_app(config_name='default'):
 
     app = Flask(__name__, template_folder=template_dir)
 
-    # Charger la config (ex : JWT_SECRET_KEY, DB URI, etc.)  
+    # Charger la config (ex : JWT_SECRET_KEY, DB URI, etc.)
+    from config import config
     app.config.from_object(config[config_name])
+
+    # Initialisation des extensions Flask
+    db.init_app(app)
+    jwt.init_app(app)          # lien avec l'app Flask
+    jwt = JWTManager()         # création de l'instance JWTManager
 
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
-   
-    from app.api.v1.auth import auth_ns, auth_bp, web_bp # Import du Blueprint pour les routes web
+    
+    # Import du Blueprint pour les routes web
+    from app.api.v1.auth import auth_ns, auth_bp, web_bp 
 
     app.config['JWT_SECRET_KEY'] = '...secret...'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
@@ -30,12 +36,6 @@ def create_app(config_name='default'):
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # désactive CSRF pour debugger (sinon config CSRF)
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
-
-    # Initialisation des extensions Flask
-    db.init_app(app)
-
-    jwt = JWTManager()         # création de l'instance JWTManager
-    jwt.init_app(app)          # lien avec l'app Flask
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
@@ -61,8 +61,9 @@ def create_app(config_name='default'):
             'description': "JWT Authorization header using Bearer scheme. Example: 'Authorization: Bearer {token}'"
         }
     }
-
-    @app.route('/')   # Définition de la route racine
+    
+    # Définition de la route racine
+    @app.route('/')   
     def accueil():
         return '<h1>Holberton HBNB API</h1>'
     
