@@ -3,7 +3,6 @@ from flask import jsonify
 from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity)
 from app.services.facade import HBnBFacade
 from flask import Blueprint, jsonify, render_template # Import pour les routes web
-from app.models.user import User
 
 # Création d’un namespace RESTX pour organiser les routes liées à l’authentification
 api = Namespace('auth', description='Auth operations')
@@ -19,7 +18,9 @@ error_model = api.model('Error', {
     'error': fields.String()
 })
 
+# Création de Blueprints pour les routes d'authentification et web
 auth_bp = Blueprint('auth', __name__)
+web_bp = Blueprint('web', __name__)
 
 # Route POST pour /auth/login pour effectuer la connexion
 @api.route('/login', '/login/')
