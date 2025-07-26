@@ -69,13 +69,6 @@ def create_app(config_name='default'):
         }
     }
 
-    # Route racine pour servir index.html
-    from flask import render_template
-
-    @app.route('/')
-    def accueil():
-        return render_template('index.html')
-
     api = Api(
         app,
         version='1.0',
