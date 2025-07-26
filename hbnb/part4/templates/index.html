@@ -10,6 +10,7 @@
   </head>
 
   <body>
+  <a id="login-link" href="login.html" style="display:none;">Login</a>
 
   <header>
     <h1>Bienvenue sur HBNB !</h1>
@@ -33,13 +34,14 @@
   <!-- === Section Liste des logements === -->
   <section id="places-list-section">
     <h2>Nos logements disponibles</h2>
+      <div id="places-list"></div>
     <!-- Les logements viendront s’afficher ici dynamiquement -->
 
     <!-- Filtre prix -->
     <div class="filter-container" style="margin: 1em 0;">
       <label for="price-filter">Filtrer par prix : </label>
       <select id="price-filter" name="price-filter">
-        <option value="All" selected>Tous les prix</option>
+        <option value="all" selected>Tous les prix</option>
         <option value="50">Jusqu'à 50€</option>
         <option value="100">Jusqu'à 100€</option>
         <option value="150">Jusqu'à 150€</option>
