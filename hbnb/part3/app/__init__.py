@@ -2,8 +2,6 @@ import os
 from flask_cors import CORS
 from flask_restx import Api
 from flask import Flask, jsonify
-from flask_jwt_extended import JWTManager
-
 from app.extensions import db, jwt
 
 def create_app(config_name='default'):
@@ -20,7 +18,6 @@ def create_app(config_name='default'):
     # Initialisation des extensions Flask
     db.init_app(app)
     jwt.init_app(app)          # lien avec l'app Flask
-    jwt = JWTManager()         # création de l'instance JWTManager
 
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
