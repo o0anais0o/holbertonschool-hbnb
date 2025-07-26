@@ -73,8 +73,6 @@ def create_app(config_name='default'):
         security='Bearer Auth'
     )
 
-    api_restx = Api(app, doc='/api/v1/')
-
     api_restx.add_namespace(auth_ns, path='/api/v1/auth') # Ajoute la namespace provenant de auth.py
     api_restx.add_namespace(users_ns, path='/api/v1/users')
 
