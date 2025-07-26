@@ -1,9 +1,36 @@
 // Ce fichier gère :
+// - obtenir un cookie par son nom
+// - vérifie si l'utilisateur est authentifié
 // - le filtre prix sur la page index
+// - affiche les places dans le DOM
+// - Tableau pour stocker toutes les places
+// - Fonction applyPriceFilter() pour appliquer le filtre de prix
 // - le chargement dynamique des places depuis le backend
 // - le formulaire de connexion (login) avec gestion des erreurs affichées
 // - la vérification du statut d'authentification
 // - tout est executé après chargement complet du DOM
+
+//-------------------------------------------------------
+// Fonction utilitaire pour obtenir un cookie par son nom
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+//-------------------------------------------------------
+// Fonction pour vérifier si l'utilisateur est authentifié
+function checkAuthentication() {
+  const token = getCookie('token');
+  const loginLink = document.getElementById('login-link');
+  if (!token) {
+    loginLink.style.display = 'block';
+  } else {
+    loginLink.style.display = 'none';
+    fetchPlaces(token);
+  }
+}
 
 //-------------------------------------------------------
 // Gestion du filtre prix côté client
@@ -35,6 +62,68 @@ function setupPriceFilter() {
         el.style.display = 'none';
       }
     });
+  });
+}
+
+//-------------------------------------------------------
+// Fonction pour afficher les places dans le DOM
+async function fetchPlaces(token) {
+  try {
+    const response = await fetch('http://localhost:5001/api/v1/places', {
+      method: 'GET',
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : ''
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Erreur lors du chargement des places');
+    }
+    const data = await response.json();
+    displayPlaces(data);
+  } catch (error) {
+    alert('Impossible de charger les places. Détail : ' + error.message);
+  }
+}
+
+//-------------------------------------------------------
+// Tableau pour stocker toutes les places
+let allPlaces = [];
+
+function displayPlaces(places) {
+  const placesList = document.getElementById('places-list');
+  placesList.innerHTML = '';
+  allPlaces = places;
+
+  places.forEach((place) => {
+    const placeDiv = document.createElement('div');
+    placeDiv.classList.add('place-item');
+    placeDiv.innerHTML = `
+      <h2>${place.name}</h2>
+      <p>${place.description || 'Pas de description'}</p>
+      <p>Lieu : ${place.city || 'Inconnu'} (${place.country || ''})</p>
+      <p>Prix : ${place.price_by_night} €</p>
+    `;
+    placeDiv.setAttribute('data-price', place.price_by_night || 0);
+    placesList.appendChild(placeDiv);
+  });
+
+  applyPriceFilter(); // applique le filtre après affichage
+}
+
+//-------------------------------------------------------
+// Fonction pour appliquer le filtre de prix
+function applyPriceFilter() {
+  const selected = document.getElementById('price-filter').value;
+  const placesList = document.getElementById('places-list');
+  const placeItems = placesList.querySelectorAll('.place-item');
+
+  placeItems.forEach((item) => {
+    const prix = parseInt(item.getAttribute('data-price'), 10);
+    if (selected === 'all' || prix <= parseInt(selected, 10)) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
   });
 }
 
@@ -169,4 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn('Formulaire login (#login-form) non trouvé dans le DOM');
   }
 
+// Applique le filtre de prix au changement de sélection
+document.getElementById('price-filter').addEventListener('change', applyPriceFilter);
+
+// Appelle la fonction checkAuthentication() une fois que le DOM est chargé
+window.addEventListener('DOMContentLoaded', checkAuthentication);
 });
