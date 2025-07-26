@@ -10,7 +10,8 @@
   </head>
 
   <body>
-  <a id="login-link" href="login.html" style="display:none;">Login</a>
+    <a id="login-link" href="login.html" style="display:none; position: absolute; top: 10px; left: 10px;">Se connecter</a>
+
 
   <header>
     <h1>Bienvenue sur HBNB !</h1>
@@ -62,6 +63,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const logoutBtn = document.getElementById('logout-btn');
       const placesList = document.getElementById('places-list');
+      const loginLink = document.getElementById('login-link');
 
       try {
         // Vérification connexion via endpoint /auth/status
@@ -70,19 +72,22 @@
           credentials: 'include'  // Envoie les cookies (notamment JWT HttpOnly)
         });
 
-        if (response.ok) {
-          // Si connecté, affiche bouton déconnexion
-          logoutBtn.style.display = 'inline-block'; 
-        } else {
-          // Pas connecté, redirection vers login
-          window.location.href = 'login.html';
-          return;
-        }
-      } catch (err) {
-        console.error('Erreur lors de la vérification de connexion :', err);
-        window.location.href = 'login.html';
-        return;
-      }
+    if (response.ok) {
+      // Utilisateur connecté
+      logoutBtn.style.display = 'inline-block';   // afficher déconnexion
+      loginLink.style.display = 'none';           // masquer lien login
+    } else {
+      // Utilisateur NON connecté
+      logoutBtn.style.display = 'none';           // masquer déconnexion
+      loginLink.style.display = 'inline';         // afficher lien login
+      // PAS de redirection automatique ici !
+    }
+  } catch (err) {
+    console.error('Erreur lors de la vérification de connexion :', err);
+    // S'il y a une erreur, considérer comme non connecté (visiteur)
+    logoutBtn.style.display = 'none';
+    loginLink.style.display = 'inline';
+  }
 
       // Événement déconnexion
       logoutBtn.addEventListener('click', async () => {
