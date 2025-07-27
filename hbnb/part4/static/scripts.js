@@ -66,14 +66,15 @@ function fetchPlaces() {
 // Fonction pour afficher les places dans le DOM
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
-    placesList.innerHTML = "";
+    placesList.innerHTML = ""; // vide d'abord la liste
 
     places.forEach(place => {
         // Adapte selon le format réel de ta réponse API
         const placeDiv = document.createElement('div');
         placeDiv.className = "place-card";
+        // place.price_by_night doit contenir le prix (adapter le nom au besoin)
         placeDiv.setAttribute('data-price', place.price_by_night || 0);
-
+        // Remplis le contenu visuel
         placeDiv.innerHTML = `
             <h3>${place.name}</h3>
             <p>${place.description || ""}</p>
