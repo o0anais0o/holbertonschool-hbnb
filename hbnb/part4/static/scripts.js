@@ -1,5 +1,109 @@
-// --- Fonctions utilitaires ---
+// Ce fichier gère :
+// - getCookie(name) Obtenir un cookie par son nom 
+// - checkAuthentication() Vérifie si l'utilisateur est authentifié
+// - fetchPlaces() Récupère les places depuis l'API
+// - displayPlaces(places) Affiche les places dans le DOM
+// - setupPriceFilter() Configure le filtre de prix
+// - showLoginLink() Affiche un lien vers la page de connexion si l'utilisateur n'est pas connecté
+// - loadPlaces() Charge les places depuis l'API
+// - checkLoginStatus() Vérifie le statut de connexion de l'utilisateur
+// - loginUser(email, password) Gère la connexion de l'utilisateur
+// - applyPriceFilter() Applique un filtre de prix aux places
+// - Initialisation du script une fois le DOM chargé
 
+//-------------------------------------------------------
+// Fonction utilitaire pour obtenir un cookie par son nom
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+//-------------------------------------------------------
+// Fonction pour vérifier si l'utilisateur est authentifié
+function checkAuthentication() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-link');
+    if (!loginLink) return;
+
+    if (!token) {
+        loginLink.style.display = 'block';
+    } else {
+        loginLink.style.display = 'none';
+    }
+}
+
+//-------------------------------------------------------
+// Fonction pour afficher les places dans le DOM
+let allPlaces = []; // on stocke pour filtrer ensuite
+
+function fetchPlaces() {
+    const token = getCookie('token');
+    let headers = {};
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    fetch('http://0.0.0.0:5000/api/v1/places', {
+        method: 'GET',
+        headers: headers,
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Erreur API');
+        return response.json();
+    })
+    .then(data => {
+        allPlaces = data;
+        displayPlaces(data);
+    })
+    .catch((err) => {
+        document.getElementById('places-list').innerHTML = '<p>Impossible de charger les places.</p>';
+    });
+}
+
+//-------------------------------------------------------
+// Fonction pour afficher les places dans le DOM
+function displayPlaces(places) {
+    const placesList = document.getElementById('places-list');
+    placesList.innerHTML = "";
+
+    places.forEach(place => {
+        // Adapte selon le format réel de ta réponse API
+        const placeDiv = document.createElement('div');
+        placeDiv.className = "place-card";
+        placeDiv.setAttribute('data-price', place.price_by_night || 0);
+
+        placeDiv.innerHTML = `
+            <h3>${place.name}</h3>
+            <p>${place.description || ""}</p>
+            <p><strong>Prix :</strong> ${place.price_by_night} €</p>
+            <p><strong>Ville :</strong> ${place.city ? place.city.name : ""}</p>
+        `;
+        placesList.appendChild(placeDiv);
+    });
+}
+
+//-------------------------------------------------------
+// Fonction pour configurer le filtre de prix
+function setupPriceFilter() {
+    const priceFilter = document.getElementById('price-filter');
+    if (!priceFilter) return;
+
+    priceFilter.addEventListener('change', (event) => {
+        const value = event.target.value;
+        let filtered = allPlaces;
+
+        if (value !== 'all') {
+            const max = parseInt(value, 10);
+            filtered = allPlaces.filter(place => place.price_by_night <= max);
+        }
+
+        displayPlaces(filtered);
+    });
+}
+
+//-------------------------------------------------------
 // Affiche un lien vers la page login si utilisateur non connecté
 // (fonction ajoutée pour éviter l'erreur showLoginLink undefined)
 function showLoginLink() {
@@ -118,4 +222,11 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = '/templates/index.html';
     });
   }
+
+  // Initialisation de l’ensemble du script une fois le DOM chargé
+  document.addEventListener('DOMContentLoaded', () => {
+    checkAuthentication(); // montre/cache le login
+    fetchPlaces(); // récupère et affiche
+    setupPriceFilter(); // gère le filtre
+});
 });
