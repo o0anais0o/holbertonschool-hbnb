@@ -1,5 +1,6 @@
 // Ce fichier gère :
 // - getCookie(name) Obtenir un cookie par son nom 
+// - checkAuthStatus() Vérifie si l'utilisateur est authentifié via un token
 // - checkAuthentication() Vérifie si l'utilisateur est authentifié
 // - fetchPlaces() Récupère les places depuis l'API
 // - displayPlaces(places) Affiche les places dans le DOM
