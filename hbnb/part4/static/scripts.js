@@ -11,6 +11,8 @@
 // - applyPriceFilter() Applique un filtre de prix aux places
 // - Initialisation du script une fois le DOM chargé
 
+let allPlaces = []; // variable globale pour stocker toutes les places récupérées
+
 //-------------------------------------------------------
 // Fonction utilitaire pour obtenir un cookie par son nom
 function getCookie(name) {
@@ -39,8 +41,6 @@ function checkAuthentication() {
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM
-let allPlaces = []; // on stocke pour filtrer ensuite
-
 function fetchPlaces() {
     const token = getCookie('token');
     let headers = {};
@@ -60,51 +60,62 @@ function fetchPlaces() {
         allPlaces = data;
         displayPlaces(data);
     })
-    .catch((err) => {
-        document.getElementById('places-list').innerHTML = '<p>Impossible de charger les places.</p>';
-    });
-}
+    .catch(err => {
+      const placesList = document.getElementById('places-list');
+      if (placesList) {
+        placesList.innerHTML = '<p>Impossible de charger les places.</p>';
+  }
+});
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM
 function displayPlaces(places) {
-    const placesList = document.getElementById('places-list');
-    placesList.innerHTML = ""; // vide d'abord la liste
+  const placesList = document.getElementById('places-list');
+  if (!placesList) return; // arrêt si pas d'élément
 
-    places.forEach(place => {
-        // Adapte selon le format réel de ta réponse API
-        const placeDiv = document.createElement('div');
-        placeDiv.className = "place-card";
-        // place.price_by_night doit contenir le prix (adapter le nom au besoin)
-        placeDiv.setAttribute('data-price', place.price_by_night || 0);
-        // Remplis le contenu visuel
-        placeDiv.innerHTML = `
-            <h3>${place.name}</h3>
-            <p>${place.description || ""}</p>
-            <p><strong>Prix :</strong> ${place.price_by_night} €</p>
-            <p><strong>Ville :</strong> ${place.city ? place.city.name : ""}</p>
-        `;
-        placesList.appendChild(placeDiv);
-    });
+  placesList.innerHTML = ''; // vide la liste avant le remplissage
+
+  places.forEach(place => {
+    // Adapte selon le format réel de ta réponse API
+    const placeDiv = document.createElement('div');
+    placeDiv.className = 'place-card';
+    // place.price_by_night doit contenir le prix (adapter le nom au besoin)
+    placeDiv.setAttribute('data-price', place.price_by_night || 0);
+    // Remplis le contenu visuel
+    placeDiv.innerHTML = `
+      <h3>${place.name}</h3>
+      <p>${place.description || ''}</p>
+      <p><strong>Prix :</strong> ${place.price_by_night} €</p>
+      <p><strong>Ville :</strong> ${place.city && place.city.name ? place.city.name : ''}</p>
+    `;
+
+    placesList.appendChild(placeDiv);
+  });
 }
 
 //-------------------------------------------------------
 // Fonction pour configurer le filtre de prix
 function setupPriceFilter() {
-    const priceFilter = document.getElementById('price-filter');
-    if (!priceFilter) return;
+  const priceFilter = document.getElementById('price-filter');
+  if (!priceFilter) return;
 
-    priceFilter.addEventListener('change', (event) => {
-        const value = event.target.value;
-        let filtered = allPlaces;
+  priceFilter.addEventListener('change', (event) => {
+    const value = event.target.value;
 
-        if (value !== 'all') {
-            const max = parseInt(value, 10);
-            filtered = allPlaces.filter(place => place.price_by_night <= max);
-        }
+    let filtered = allPlaces;
 
-        displayPlaces(filtered);
-    });
+    if (value !== 'all') {
+      const maxPrice = parseInt(value, 10); // convertit la valeur en nombre entier
+      filtered = allPlaces.filter(place => {
+        // Vérifie que le prix est défini sinon met 0 par défaut
+        const price = place.price_by_night || 0;
+        return price <= maxPrice;
+      });
+    }
+
+    // Affiche la liste filtrée
+    displayPlaces(filtered);
+  });
 }
 
 //-------------------------------------------------------
@@ -232,5 +243,5 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthentication(); // montre/cache le login
     fetchPlaces(); // récupère et affiche
     setupPriceFilter(); // gère le filtre
-});
+  });
 });
