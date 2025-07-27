@@ -23,6 +23,28 @@ function getCookie(name) {
 }
 
 //-------------------------------------------------------
+// Fonction pour vérifier le statut d'authentification de l'utilisateur
+async function checkAuthStatus() {
+  const token = getCookie('token');
+  if (!token) return false;  // Pas de token = pas connecté
+
+  try {
+    const response = await fetch('http://localhost:5000/api/v1/auth/status', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include'  // si nécessaire pour envoyer les cookies
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Erreur vérification auth:', error);
+    return false;
+  }
+}
+
+//-------------------------------------------------------
 // Fonction pour vérifier si l'utilisateur est authentifié
 function checkAuthentication() {
     const token = getCookie('token');
@@ -239,9 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Initialisation de l’ensemble du script une fois le DOM chargé
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+  const isAuthenticated = await checkAuthStatus();
+  if (isAuthenticated) {
     checkAuthentication(); // montre/cache le login
     fetchPlaces(); // récupère et affiche
     setupPriceFilter(); // gère le filtre
-  })
+  } else {
+    // Pas authentifié, on affiche le formulaire/login
+    const loginLink = document.getElementById('login-link');
+    const loginSection = document.getElementById('login-section');
+    if (loginLink) loginLink.style.display = 'block';
+    if (loginSection) loginSection.style.display = 'block';
+  }
+});
 })}
