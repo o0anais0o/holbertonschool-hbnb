@@ -4,8 +4,9 @@
 // - checkAuthentication() Vérifie si l'utilisateur est authentifié
 // - fetchPlaces() Récupère les places depuis l'API
 // - displayPlaces(places) Affiche les places dans le DOM
-// - setupPriceFilter() Configure le filtre de prix
 // - showLoginLink() Affiche un lien vers la page de connexion si l'utilisateur n'est pas connecté
+// - applyPriceFilter(event) Applique un filtre de prix aux places
+// - setupPriceFilter() Configure le filtre de prix
 // - loadPlaces() Charge les places depuis l'API
 // - checkLoginStatus() Vérifie le statut de connexion de l'utilisateur
 // - loginUser(email, password) Gère la connexion de l'utilisateur
@@ -48,96 +49,63 @@ async function checkAuthStatus() {
 //-------------------------------------------------------
 // Fonction pour vérifier si l'utilisateur est authentifié
 function checkAuthentication() {
-    const token = getCookie('token');
-    const loginLink = document.getElementById('login-link');
-    const loginSection = document.getElementById('login-section');
-    if (!loginLink || !loginSection) return;
+  const token = getCookie('token');
+  const loginLink = document.getElementById('login-link');
+  if (!loginLink) return;
 
-    if (!token) {
-        loginLink.style.display = 'block';
-        loginSection.style.display = 'block';
-    } else {
-        loginLink.style.display = 'none';
-        loginSection.style.display = 'none';
-    }
+  if (!token) {
+    loginLink.style.display = 'block';
+  } else {
+    loginLink.style.display = 'none';
+  }
 }
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM
-function fetchPlaces() {
-    const token = getCookie('token');
-    let headers = {};
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
+async function fetchPlaces() {
+  const token = getCookie('token');
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    fetch('http://0.0.0.0:5000/api/v1/places', {
-        method: 'GET',
-        headers: headers,
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Erreur API');
-        return response.json();
-    })
-    .then(data => {
-        allPlaces = data;
-        displayPlaces(data);
-    })
-    .catch(err => {
-      const placesList = document.getElementById('places-list');
-      if (placesList) {
-        placesList.innerHTML = '<p>Impossible de charger les places.</p>';
+  try {
+    const response = await fetch('http://0.0.0.0:5000/api/v1/places', {
+      method: 'GET',
+      headers: headers
+    });
+
+    if (!response.ok) throw new Error('Erreur API');
+
+    const data = await response.json();
+    allPlaces = data;           // stocke globalement pour filtre
+    displayPlaces(data);
+  } catch (err) {
+    const placesList = document.getElementById('places-list');
+    if (placesList) placesList.innerHTML = '<p>Impossible de charger les places.</p>';
+    console.error('fetchPlaces error:', err);
   }
-});
+}
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM
 function displayPlaces(places) {
-  const placesList = document.getElementById('places-list');
-  if (!placesList) return; // arrêt si pas d'élément
+  let placesList = document.getElementById('places-list');
+  if (!placesList) {
+    placesList = document.getElementById('places-container'); // fallback optionnel
+  }
+  if (!placesList) return; // aucun conteneur trouvé, on stop
 
-  placesList.innerHTML = ''; // vide la liste avant le remplissage
-
+  placesList.innerHTML = '';
   places.forEach(place => {
-    // Adapte selon le format réel de ta réponse API
     const placeDiv = document.createElement('div');
     placeDiv.className = 'place-card';
-    // place.price_by_night doit contenir le prix (adapter le nom au besoin)
     placeDiv.setAttribute('data-price', place.price_by_night || 0);
-    // Remplis le contenu visuel
     placeDiv.innerHTML = `
       <h3>${place.name}</h3>
       <p>${place.description || ''}</p>
       <p><strong>Prix :</strong> ${place.price_by_night} €</p>
       <p><strong>Ville :</strong> ${place.city && place.city.name ? place.city.name : ''}</p>
     `;
-
     placesList.appendChild(placeDiv);
-  });
-}
-
-//-------------------------------------------------------
-// Fonction pour configurer le filtre de prix
-function setupPriceFilter() {
-  const priceFilter = document.getElementById('price-filter');
-  if (!priceFilter) return;
-
-  priceFilter.addEventListener('change', (event) => {
-    const value = event.target.value;
-
-    let filtered = allPlaces;
-
-    if (value !== 'all') {
-      const maxPrice = parseInt(value, 10); // convertit la valeur en nombre entier
-      filtered = allPlaces.filter(place => {
-        // Vérifie que le prix est défini sinon met 0 par défaut
-        const price = place.price_by_night || 0;
-        return price <= maxPrice;
-      });
-    }
-
-    // Affiche la liste filtrée
-    displayPlaces(filtered);
   });
 }
 
@@ -152,12 +120,31 @@ function showLoginLink() {
   if (loginLink) loginLink.style.display = 'block';
 }
 
-// Applique un filtre de prix aux places (exemple, adapte selon besoins réels)
-function applyPriceFilter() {
-  console.log('applyPriceFilter appelée');
-  // Implementation du filtre (à adapter)
+//-------------------------------------------------------
+// Applique un filtre de prix aux places
+function applyPriceFilter(event) {
+  const maxPrice = event.target.value;
+  const placeCards = document.querySelectorAll('.place-card');
+  placeCards.forEach(card => {
+    const price = parseInt(card.dataset.price, 10);
+    if (maxPrice === 'all' || price <= maxPrice) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
 }
 
+//-------------------------------------------------------
+  // Setup du filtre prix
+function setupPriceFilter() {
+  const priceFilter = document.getElementById('price-filter');
+  if (priceFilter) {
+    priceFilter.addEventListener('change', applyPriceFilter);
+  }
+}
+
+//-------------------------------------------------------
 //Fonction de chargement des places (exemple)
 async function loadPlaces() {
   const placesContainer = document.getElementById('places-container');
@@ -206,21 +193,29 @@ async function checkLoginStatus() {
 // Fonction appelant loadPlaces après login réussi
 async function loginUser(email, password) {
   try {
-    const response = await fetch('/api/v1/auth/login', {
+    const response = await fetch('http://localhost:5000/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
+
     if (!response.ok) {
-      console.error('Erreur login:', response.status);
-      return;
+      // Essaye de récupérer un message d'erreur utile
+      const errorData = await response.json().catch(() => ({}));
+      const message = errorData.msg || `Erreur login: statut ${response.status}`;
+      throw new Error(message);
     }
+
     const data = await response.json();
-    localStorage.setItem('access_token', data.access_token);
-    console.log('Login réussi');
-    await loadPlaces();
+    // Stocker le token dans un cookie (path=/ pour être accessible partout)
+    document.cookie = `token=${data.access_token}; path=/; SameSite=Lax`;
+
+    // Retourne true pour indiquer succès
+    return true;
+
   } catch (error) {
-    console.error('Erreur lors du login:', error);
+    // Propage l'erreur pour gestion dans l'appelant
+    throw error;
   }
 }
 
@@ -229,13 +224,6 @@ async function loginUser(email, password) {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and parsed');
 
-  // Setup du filtre prix
-  const priceFilter = document.getElementById('price-filter');
-  if (priceFilter) {
-    priceFilter.addEventListener('change', applyPriceFilter);
-  } else {
-    console.warn('Element #price-filter not found in DOM!');
-  }
 
   // Vérifie le status de connexion utilisateur au chargement
   checkLoginStatus();
@@ -287,4 +275,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginSection) loginSection.style.display = 'block';
   }
 });
-}
