@@ -243,5 +243,5 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthentication(); // montre/cache le login
     fetchPlaces(); // récupère et affiche
     setupPriceFilter(); // gère le filtre
-  });
-});
+  })
+})}
