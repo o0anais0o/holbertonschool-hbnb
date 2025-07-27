@@ -25,12 +25,15 @@ function getCookie(name) {
 function checkAuthentication() {
     const token = getCookie('token');
     const loginLink = document.getElementById('login-link');
-    if (!loginLink) return;
+    const loginSection = document.getElementById('login-section');
+    if (!loginLink || !loginSection) return;
 
     if (!token) {
         loginLink.style.display = 'block';
+        loginSection.style.display = 'block';
     } else {
         loginLink.style.display = 'none';
+        loginSection.style.display = 'none';
     }
 }
 
