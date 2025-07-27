@@ -261,6 +261,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+    // Listener pour afficher le formulaire login au clic
+  const loginLink = document.getElementById('login-link');
+  if (loginLink) {
+    loginLink.addEventListener('click', (e) => {
+      e.preventDefault(); // empêche la navigation vers login.html
+      const loginSection = document.getElementById('login-section');
+      if (loginSection) loginSection.style.display = 'block'; // affiche le formulaire
+    });
+  }
+});
+
   // Initialisation de l’ensemble du script une fois le DOM chargé
   document.addEventListener('DOMContentLoaded', async () => {
   const isAuthenticated = await checkAuthStatus();
@@ -276,4 +287,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginSection) loginSection.style.display = 'block';
   }
 });
-})}
+}
