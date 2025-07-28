@@ -3,6 +3,7 @@ from flask import jsonify
 from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity)
 from app.services.facade import HBnBFacade
 from flask import Blueprint, jsonify, render_template # Import pour les routes web
+from flask import current_app as app  # importe l'instance Flask courante
 
 # Création d’un namespace RESTX pour organiser les routes liées à l’authentification
 api = Namespace('auth', description='Auth operations')
@@ -76,10 +77,13 @@ class Status(Resource):
     def get(self):
         # Récupère l'identité de l'utilisateur du token (ex: user.id)
         current_user = get_jwt_identity()
-
+        app.logger.info(f"User ID from JWT: {current_user}")   # Log de debug
+        if current_user:
         # Renvoie la réponse JSON confirmant l'utilisateur connecté
-        return jsonify({'logged_in_as': current_user})
-
+            return jsonify({'logged_in_as': current_user})
+        else:
+            return jsonify({'logged_in_as': None}), 401
+        
 web_bp = Blueprint('web', __name__) # Blueprint pour les routes web
 
 @web_bp.route('/login', methods=['GET'])

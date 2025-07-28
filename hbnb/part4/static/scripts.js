@@ -31,7 +31,8 @@ async function checkAuthStatus() {
       credentials: 'include'    // Envoie automatiquement les cookies (notamment le JWT cookie)
     });
     return response.ok;
-  } catch {
+  } catch (error) {
+    console.error('Erreur vérification auth:', error);
     return false;
   }
 }
