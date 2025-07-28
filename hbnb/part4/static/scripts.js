@@ -25,6 +25,7 @@ function getCookie(name) {
 // Fonction pour vérifier le statut d'authentification de l'utilisateur
 async function checkAuthStatus() {
   const token = getCookie('token');
+  console.log('Token extrait du cookie:', token); // Important pour debug
   if (!token) return false;  // Pas de token = pas connecté
 
   try {
@@ -163,6 +164,11 @@ async function loginUser(email, password) {
     }
 
     const data = await response.json();
+    console.log('Login response data:', data);
+
+    if (!data.access_token) {
+      throw new Error('Pas de token dans la réponse');
+    }
 
     // Stocker le token dans un cookie (path=/ pour être accessible partout)
     // Ajout de max-age=86400 (1 jour) et SameSite=Lax pour meilleure sécurité
@@ -174,6 +180,7 @@ async function loginUser(email, password) {
     return true;
 
   } catch (error) {
+    console.error('Erreur loginUser:', error);
     // Propage l'erreur pour gestion dans l'appelant
     throw error;
   }

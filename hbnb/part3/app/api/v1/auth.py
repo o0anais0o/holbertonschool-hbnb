@@ -47,8 +47,8 @@ class Login(Resource):
         # Génère un token JWT avec l'identité utilisateur (ici son ID converti en chaîne)
         access_token = create_access_token(identity=str(user.id))
 
-        # Prépare la réponse JSON à envoyer au client (le corps)
-        resp = jsonify({'login': True})
+        # Renvoie le token aussi dans le JSON pour que le frontend puisse le récupérer
+        resp = jsonify({'access_token': access_token})
 
         # Ajoute dans la réponse un cookie HttpOnly avec le token JWT (accessible uniquement serveur)
         set_access_cookies(resp, access_token)
