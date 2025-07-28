@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loginLink = document.getElementById('login-link');
   const priceFilter = document.getElementById('price-filter');
   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
+  const closeBtn = document.getElementById('close-login-form'); // Bouton pour fermer le formulaire de connexion
 
   // Vérifie status auth (remplace checkLoginStatus)
   const isAuthenticated = await checkAuthStatus();
@@ -216,13 +217,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (loginSection) loginSection.style.display = 'none';
   }
 
-  // Listener lien "Se connecter" pour afficher formulaire
-  if (loginLink && loginSection) {
-    loginLink.addEventListener('click', e => {
-      e.preventDefault();
-      loginSection.style.display = 'block';
-    });
+  if (!loginLink || !loginSection || !closeBtn) {
+    console.error('Un ou plusieurs éléments pour le modal login sont manquants');
+    return;
   }
+
+  // Au départ : cacher la modale explicitement
+  loginSection.style.display = 'none';
+
+  loginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginSection.style.display = 'flex'; // affiche modal
+  });
+
+  closeBtn.addEventListener('click', () => {
+    loginSection.style.display = 'none'; // ferme modal
+  });
+
+  loginSection.addEventListener('click', (e) => {
+    if (e.target === loginSection) { // clique sur overlay
+      loginSection.style.display = 'none';
+    }
+  });
 
   // Listener soumission formulaire login
   if (loginForm) {

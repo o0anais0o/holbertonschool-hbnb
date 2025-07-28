@@ -10,28 +10,53 @@
 
   </head>
 
-  <body>
-    <a id="login-link" href="login.html" class="login-button" style="display:none;">Se connecter</a>
-  <header>
-    <h1>
-      Bienvenue sur HBNB
-    </h1>
-    <!-- Ici tu peux avoir ta barre de navigation -->
-  </header>
+ <a id="login-link" href="#" class="login-button" style="display:block; float:right;">Se connecter</a>
+<header>
+  <h1>
+    Bienvenue sur HBNB
+  </h1>
+  <!-- Ici tu peux avoir ta barre de navigation -->
+</header>
 
-  <main>
-
-  <!-- === Section Connexion === -->
-  <section id="login-section" class="section-login" style="margin-bottom: 2em; display:none;">
-    <h2>Connexion</h2>
-    <form id="login-form">
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Mot de passe" required />
+<main>
+  <!-- Section modale cachée avec le formulaire à l'intérieur -->
+  <section id="login-section"
+      style="
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;">
+    <form id="login-form"
+        style="background: #fff;
+        padding: 2em 2em 1.5em;
+        border-radius: 8px;
+        position: relative;
+        min-width: 300px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 1em;">
+      <!-- Bouton fermer -->
+      <button type="button" id="close-login-form"
+          style="position: absolute;
+          top: 10px; right: 10px; border: none;
+          background: transparent;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: #333;">&times;</button>
+      <h2>Connexion</h2>
+      <input type="email" id="email" name="email" placeholder="Email" required />
+      <input type="password" id="password" name="password" placeholder="Mot de passe" required />
       <button type="submit">Se connecter</button>
-      <br />
-      <span id="login-error" style="color: red; font-weight: bold;"></span>
+      <p id="login-error" style="color: red; font-weight: bold; margin: 0;"></p>
     </form>
   </section>
+  <!-- ... le reste de ton contenu ... -->
+</main>
 
   <!-- === Section Liste des logements === -->
   <section id="places-list-section">
