@@ -192,42 +192,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
   const closeBtn = document.getElementById('close-login-form'); // Bouton pour fermer le formulaire de connexion
 
-  // Ajoute ces deux références pour les boutons login/logout (il faut que ces éléments existent dans le HTML)
-  const loginBtn = document.getElementById('loginBtn');    // bouton Ou lien “Se connecter”
-  console.log('loginBtn:', loginBtn);
-  const logoutBtn = document.getElementById('logoutBtn');  // bouton “Déconnexion”
-
   // Vérifie status auth (remplace checkLoginStatus)
   const isAuthenticated = await checkAuthStatus();
 
   if (isAuthenticated) {
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'block';
-
-  // Cache la section login si existante
-  if (loginSection) loginSection.style.display = 'none';
+    checkAuthentication(); // cache bouton login
+    if (loginSection) loginSection.style.display = 'none';
 
     // Charge les places si conteneur existe
-  if (placesContainer) {
+    if (placesContainer) {
       fetchPlaces(); // ou loadPlaces selon ton nom de fonction
     } else {
       console.warn('Element places container not found!');
     }
-
     // Active le filtre prix
-  if (priceFilter) {
+    if (priceFilter) {
       setupPriceFilter();
     } else {
       console.warn('Element price-filter not found!');
     }
   } else {
-    // Pas connecté : afficher bouton login et masquer logout
-    if (loginBtn) loginBtn.style.display = 'block';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-
-    // Si tu veux afficher le loginLink en plus (exemple dans ton code)
+    // Pas connecté : afficher bouton login et masquer/afficher formulaire selon besoin
     if (loginLink) loginLink.style.display = 'block';
-
     if (loginSection) loginSection.style.display = 'none';
   }
 
@@ -239,19 +225,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Au départ : cacher la modale explicitement
   loginSection.style.display = 'none';
 
-  // Gestion ouverture/fermeture modal login
-  if (loginBtn) {
-    loginBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      loginSection.style.display = 'flex';
-    });
-  } else if (loginLink) {
-    // si tu gardes loginLink dans ton HTML et qu’il sert à ouvrir la modale
-    loginLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      loginSection.style.display = 'flex';
-    });
-  }
+  loginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginSection.style.display = 'flex'; // affiche modal
+  });
 
   closeBtn.addEventListener('click', () => {
     loginSection.style.display = 'none'; // ferme modal
@@ -262,16 +239,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       loginSection.style.display = 'none';
     }
   });
-
-  // Listener pour la déconnexion (logoutBtn)
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      // Ajoute ta fonction logoutUser selon ta logique (exemple à adapter)
-      await logoutUser();
-      window.location.reload();
-    });
-  }
 
   // Listener soumission formulaire login
   if (loginForm) {
