@@ -24,22 +24,14 @@ function getCookie(name) {
 //-------------------------------------------------------
 // Fonction pour vérifier le statut d'authentification de l'utilisateur
 async function checkAuthStatus() {
-  const token = getCookie('token');
-  console.log('Token extrait du cookie:', token); // Important pour debug
-  if (!token) return false;  // Pas de token = pas connecté
-
   try {
     const response = await fetch('http://localhost:5000/api/v1/auth/status', {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      credentials: 'include'  // si nécessaire pour envoyer les cookies
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'    // Envoie automatiquement les cookies (notamment le JWT cookie)
     });
     return response.ok;
-  } catch (error) {
-    console.error('Erreur vérification auth:', error);
+  } catch {
     return false;
   }
 }

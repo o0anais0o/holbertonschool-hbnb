@@ -11,6 +11,7 @@ from flask import Flask, jsonify
 from app.extensions import db, jwt
 from flask_restx import Api
 from flask import render_template, Blueprint
+from flask_jwt_extended import JWTManager
 
 def create_app(config_name='default'):
     
@@ -27,16 +28,16 @@ def create_app(config_name='default'):
     # Initialisation des extensions Flask
     db.init_app(app)
     jwt.init_app(app)          # lien avec l'app Flask
+    jwt = JWTManager(app)
 
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
 
-    app.config['JWT_SECRET_KEY'] = '...secret...'
-    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_SECRET_KEY'] = 'secret_key' # Clé secrète pour signer les tokens, à changer en production
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies'] # Configure les emplacements où JWT sera cherché (ici uniquement dans les cookies)
     app.config['JWT_COOKIE_SECURE'] = False  # True si https obligatoire ; False pour dev local
-    app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
-    app.config['JWT_REFRESH_COOKIE_PATH'] = '/'
-    # Pour pouvoir envoyer cookie cross-origin
+    app.config['JWT_ACCESS_COOKIE_PATH'] = '/' # Configure le chemin pour cookie d’access token (optionnel)
+    app.config['JWT_REFRESH_COOKIE_PATH'] = '/' # Pour pouvoir envoyer cookie cross-origin
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # désactive CSRF pour debugger (sinon config CSRF)
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test

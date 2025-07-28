@@ -70,7 +70,7 @@ class Logout(Resource):
         return resp
 
 # Route GET pour /auth/status afin de vérifier si l'utilisateur est connecté via JWT
-@api.route('/status', '/status/')
+@api.route('/status', '/status/', '/auth/status', '/auth/status/')
 class Status(Resource):
     @jwt_required(locations=["cookies"])  # Cette route ne répond que si token JWT valide est présent (dans cookie)
     def get(self):
