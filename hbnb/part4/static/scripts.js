@@ -2,6 +2,7 @@
 // - getCookie(name) Obtenir un cookie par son nom 
 // - checkAuthStatus() Vérifie si l'utilisateur est authentifié via un token
 // - checkAuthentication() Vérifie si l'utilisateur est authentifié
+// - toggleButtons(isLoggedIn) Affiche ou masque les boutons de connexion/déconnexion
 // - fetchPlaces() Récupère les places depuis l'API
 // - displayPlaces(places) Affiche les places dans le DOM
 // - applyPriceFilter(event) Applique un filtre de prix aux places
@@ -51,6 +52,18 @@ function checkAuthentication() {
     loginLink.style.display = 'none';
   }
 }
+
+//-------------------------------------------------------
+// Fonction pour afficher les boutons de connexion/déconnexion selon l'état d'authentification
+  function toggleButtons(isLoggedIn) {
+    if (isLoggedIn) {
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'block';
+    } else {
+      if (loginBtn) loginBtn.style.display = 'block'; // Affiche bouton ‘Se connecter’
+      if (logoutBtn) logoutBtn.style.display = 'none'; // Masque bouton ‘Déconnexion’
+    }
+  }
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM / Backend
@@ -201,18 +214,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Vérifier si l'utilisateur est authentifié via cookie JWT HttpOnly(existe côté backend)
   const isAuthenticated = await checkAuthStatus();
 
-  function toggleButtons(isLoggedIn) {
-    if (isLoggedIn) {
-      if (loginBtn) loginBtn.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'block';
-    } else {
-      if (loginBtn) loginBtn.style.display = 'block'; // Affiche bouton ‘Se connecter’
-      if (logoutBtn) logoutBtn.style.display = 'none'; // Masque bouton ‘Déconnexion’
-    }
-  }
+  if (isAuthenticated) {
+    // Si connecté : cache le bouton Se connecter, affiche celui de déconnexion
+    loginBtn.style.display = 'none';
+    logoutBtn.style.display = 'block';
+  } else {
+    // Sinon : affiche bouton Se connecter, cache déconnexion
+    loginBtn.style.display = 'block';
+    logoutBtn.style.display = 'none';
 
   // Applique l'affichage initial des boutons
-  toggleButtons(isAuthenticated);  
+  toggleButtons(isAuthenticated); {
+    if (isAuthenticated) {
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'block';
+    } else {
+      loginBtn.style.display = 'block';
+      logoutBtn.style.display = 'none';
+    }
+  }
 
   // Lorsque l'utilisateur clique sur déconnexion
   if (logoutBtn) {
@@ -238,6 +258,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       const loginSection = document.getElementById('login-section');
       if (loginSection) loginSection.style.display = 'flex';
     });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginSection.style.display = 'none';
+    });
+  }
+
+  if (loginSection) {
+    loginSection.addEventListener('click', (e) => {
+      if (e.target === loginSection) { // Clique vraiment sur le fond overlay, pas sur le form !
+        loginSection.style.display = 'none';
+      }
+    });
+  }
 
   // Charge les places si conteneur existe
   if (placesContainer) {
@@ -305,6 +340,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       console.error(err.message);
       alert(err.message); // ou un alert pour informer l’utilisateur
-    }}
-  })
-}})
+    }
+  }
+    });
+  }}
+})
