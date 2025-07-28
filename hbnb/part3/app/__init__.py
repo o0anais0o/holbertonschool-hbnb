@@ -13,6 +13,8 @@ from flask_restx import Api
 from flask import render_template, Blueprint
 from flask_jwt_extended import JWTManager
 
+jwt = JWTManager()
+
 def create_app(config_name='default'):
     
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -25,11 +27,6 @@ def create_app(config_name='default'):
     from config import config
     app.config.from_object(config[config_name])
 
-    # Initialisation des extensions Flask
-    db.init_app(app)
-    jwt.init_app(app)          # lien avec l'app Flask
-    jwt = JWTManager(app)
-
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
     CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
 
@@ -41,6 +38,10 @@ def create_app(config_name='default'):
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # désactive CSRF pour debugger (sinon config CSRF)
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hbnb.db' # ligne a suprimer après test
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # ligne a suprimer après test
+
+    # Initialisation des extensions Flask
+    db.init_app(app)
+    jwt.init_app(app)          # lien avec l'app Flask
 
     # Gestion explicite des requêtes OPTIONS (préflight)
     @app.before_request
