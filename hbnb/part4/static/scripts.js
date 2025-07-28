@@ -8,6 +8,7 @@
 // - setupPriceFilter() Configure le filtre de prix
 // - loginUser(email, password) Gère la connexion de l'utilisateur
 // - applyPriceFilter() Applique un filtre de prix aux places
+// - logoutUser() Gère la déconnexion de l'utilisateur
 // - Initialisation du script une fois le DOM chargé
 
 let allPlaces = []; // variable globale pour stocker toutes les places récupérées
@@ -142,41 +143,44 @@ function setupPriceFilter() {
 //-------------------------------------------------------
 // Fonction appelant loadPlaces après login réussi
 async function loginUser(email, password) {
-  try {
-    const response = await fetch('http://localhost:5000/api/v1/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+  const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    credentials: 'include',  // Très important pour cookie HttpOnly
+    body: JSON.stringify({email, password})
+  });
 
-    if (!response.ok) {
-      // Essaye de récupérer un message d'erreur utile
-      const errorData = await response.json().catch(() => ({}));
-      const message = errorData.msg || `Erreur login: statut ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    console.log('Login response data:', data);
-
-    if (!data.access_token) {
-      throw new Error('Pas de token dans la réponse');
-    }
-
-    // Stocker le token dans un cookie (path=/ pour être accessible partout)
-    // Ajout de max-age=86400 (1 jour) et SameSite=Lax pour meilleure sécurité
-    document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
-
-    console.log('Login réussi, token stocké en cookie');
-
-    // Retourne true pour indiquer succès
-    return true;
-
-  } catch (error) {
-    console.error('Erreur loginUser:', error);
-    // Propage l'erreur pour gestion dans l'appelant
-    throw error;
+  if (!response.ok) {
+    // Tu peux récupérer un message d'erreur plus précis comme avant, si tu veux
+    const errorData = await response.json().catch(() => ({}));
+    const message = errorData.error || `Erreur login: statut ${response.status}`;
+    throw new Error(message);
   }
+
+  const data = await response.json();
+  console.log('Login response data:', data);
+
+  if (data.login !== true) {
+    throw new Error('Connexion refusée');
+  }
+
+  // Pas besoin de token ici, il est géré automatiquement dans le cookie HttpOnly
+
+  return true;
+}
+
+//-------------------------------------------------------
+// Fonction asynchrone pour faire la déconnexion vers backend
+async function logoutUser() {
+  const response = await fetch('http://localhost:5000/api/v1/auth/logout', {
+    method: 'POST',
+    credentials: 'include' // important pour envoyer cookie JWT lors de logout
+  });
+
+  if (!response.ok) {
+    throw new Error('Erreur lors de la déconnexion');
+  }
+  return true;
 }
 
 //-------------------------------------------------------
@@ -191,32 +195,74 @@ document.addEventListener('DOMContentLoaded', async () => {
   const priceFilter = document.getElementById('price-filter');
   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
   const closeBtn = document.getElementById('close-login-form'); // Bouton pour fermer le formulaire de connexion
+  const loginBtn = document.getElementById('loginBtn'); // Bouton de connexion
+  const logoutBtn = document.getElementById('logoutBtn'); // Bouton de déconnexion
 
-  // Vérifie status auth (remplace checkLoginStatus)
+  // Vérifier si l'utilisateur est authentifié via cookie JWT HttpOnly(existe côté backend)
   const isAuthenticated = await checkAuthStatus();
 
-  if (isAuthenticated) {
-    checkAuthentication(); // cache bouton login
-    if (loginSection) loginSection.style.display = 'none';
+  function toggleButtons(isLoggedIn) {
+    if (isLoggedIn) {
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'block';
+    } else {
+      if (loginBtn) loginBtn.style.display = 'block'; // Affiche bouton ‘Se connecter’
+      if (logoutBtn) logoutBtn.style.display = 'none'; // Masque bouton ‘Déconnexion’
+    }
+  }
 
-    // Charge les places si conteneur existe
-    if (placesContainer) {
+  // Applique l'affichage initial des boutons
+  toggleButtons(isAuthenticated);  
+
+  // Lorsque l'utilisateur clique sur déconnexion
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await logoutUser();
+        toggleButtons(false); // Affiche bouton se connecter
+        // Tu peux ici rajouter un message ou vider les données affichées si nécessaire
+        console.log('Déconnexion réussie, reste sur la page d\'accueil');
+      } catch (err) {
+        console.error('Erreur lors de la déconnexion :', err);
+        alert('Erreur lors de la déconnexion');
+      }
+    });
+  }
+
+  // Pour le bouton connexion, tu peux gérer l'ouverture modale ou redirection selon ton besoin
+  if (loginBtn) {
+    loginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Ici tu peux ouvrir ta modale de connexion, par ex :
+      const loginSection = document.getElementById('login-section');
+      if (loginSection) loginSection.style.display = 'flex';
+    });
+
+  // Charge les places si conteneur existe
+  if (placesContainer) {
       fetchPlaces(); // ou loadPlaces selon ton nom de fonction
     } else {
       console.warn('Element places container not found!');
     }
-    // Active le filtre prix
-    if (priceFilter) {
-      setupPriceFilter();
-    } else {
-      console.warn('Element price-filter not found!');
-    }
+
+  // Active le filtre prix
+  if (priceFilter) {
+    setupPriceFilter();
   } else {
-    // Pas connecté : afficher bouton login et masquer/afficher formulaire selon besoin
-    if (loginLink) loginLink.style.display = 'block';
-    if (loginSection) loginSection.style.display = 'none';
+    console.warn('Element price-filter not found!');
   }
 
+  } else {
+  // Pas connecté : afficher bouton login et masquer logout
+  if (loginBtn) loginBtn.style.display = 'block';
+  if (logoutBtn) logoutBtn.style.display = 'none';
+
+  if (loginLink) loginLink.style.display = 'block';
+  if (loginSection) loginSection.style.display = 'none';
+  }
+
+  // Vérifie si les éléments nécessaires existent
   if (!loginLink || !loginSection || !closeBtn) {
     console.error('Un ou plusieurs éléments pour le modal login sont manquants');
     return;
@@ -259,8 +305,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       console.error(err.message);
       alert(err.message); // ou un alert pour informer l’utilisateur
-        }
-      }
-    });
-  }
-});
+    }}
+  })
+}})
