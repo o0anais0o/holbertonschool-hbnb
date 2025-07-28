@@ -28,13 +28,13 @@ function getCookie(name) {
 async function checkAuthStatus() {
   try {
     const response = await fetch('http://localhost:5000/api/v1/auth/status', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'    // Envoie automatiquement les cookies (notamment le JWT cookie)
+      credentials: 'include'
     });
-    return response.ok;
-  } catch (error) {
-    console.error('Erreur vérification auth:', error);
+    if (!response.ok) return false;
+    const data = await response.json();
+    return Boolean(data.logged_in_as);
+  } catch (err) {
+    console.error('Erreur lors de la vérification de connexion :', err);
     return false;
   }
 }
@@ -159,14 +159,19 @@ async function loginUser(email, password) {
   const response = await fetch('http://localhost:5000/api/v1/auth/login', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    credentials: 'include',  // Très important pour cookie HttpOnly
+    credentials: 'include',  // très important pour cookie HttpOnly
     body: JSON.stringify({email, password})
   });
 
   if (!response.ok) {
-    // Tu peux récupérer un message d'erreur plus précis comme avant, si tu veux
-    const errorData = await response.json().catch(() => ({}));
-    const message = errorData.error || `Erreur login: statut ${response.status}`;
+    // Essaye d’avoir un message d’erreur précis
+    let message = `Erreur login: statut ${response.status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error) message = errorData.error;
+    } catch (e) {
+      // ignore erreur parsing JSON
+    }
     throw new Error(message);
   }
 
@@ -176,8 +181,6 @@ async function loginUser(email, password) {
   if (data.login !== true) {
     throw new Error('Connexion refusée');
   }
-
-  // Pas besoin de token ici, il est géré automatiquement dans le cookie HttpOnly
 
   return true;
 }
@@ -222,9 +225,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Sinon : affiche bouton Se connecter, cache déconnexion
     loginBtn.style.display = 'block';
     logoutBtn.style.display = 'none';
+  }
 
   // Applique l'affichage initial des boutons
-  toggleButtons(isAuthenticated); {
+  toggleButtons(isAuthenticated);
     if (isAuthenticated) {
       loginBtn.style.display = 'none';
       logoutBtn.style.display = 'block';
@@ -232,11 +236,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       loginBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
     }
+
+  // Pour le bouton connexion, tu peux gérer l'ouverture modale ou redirection selon ton besoin
+  if (loginBtn) {
+    loginBtn.addEventListener('click', e => {
+      // Ici tu peux ouvrir ta modale de connexion, par ex :
+      e.preventDefault();
+      if (loginSection) loginSection.style.display = 'flex';
+    });
   }
 
   // Lorsque l'utilisateur clique sur déconnexion
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', async (e) => {
+    logoutBtn.addEventListener('click', async e => {
       e.preventDefault();
       try {
         await logoutUser();
@@ -250,15 +262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Pour le bouton connexion, tu peux gérer l'ouverture modale ou redirection selon ton besoin
-  if (loginBtn) {
-    loginBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Ici tu peux ouvrir ta modale de connexion, par ex :
-      const loginSection = document.getElementById('login-section');
-      if (loginSection) loginSection.style.display = 'flex';
-    });
-
+  // Si l'utilisateur est authentifié, cache la section de connexion
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -266,6 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  
   if (loginSection) {
     loginSection.addEventListener('click', (e) => {
       if (e.target === loginSection) { // Clique vraiment sur le fond overlay, pas sur le form !
@@ -286,19 +291,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupPriceFilter();
   } else {
     console.warn('Element price-filter not found!');
-  }
-
-  } else {
-  // Pas connecté : afficher bouton login et masquer logout
-  if (loginBtn) loginBtn.style.display = 'block';
-  if (logoutBtn) logoutBtn.style.display = 'none';
-
-  if (loginLink) loginLink.style.display = 'block';
-  if (loginSection) loginSection.style.display = 'none';
+  // Pas connecté : afficher bouton login et masquer/afficher formulaire selon besoin
+  if (!isAuthenticated) {
+    if (loginBtn) loginBtn.style.display = 'block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (loginLink) loginLink.style.display = 'block';
+    if (loginSection) loginSection.style.display = 'none';
   }
 
   // Vérifie si les éléments nécessaires existent
-  if (!loginLink || !loginSection || !closeBtn) {
+  if (!loginLink || !loginSection || !loginBtn || !logoutBtn || !closeBtn) {
     console.error('Un ou plusieurs éléments pour le modal login sont manquants');
     return;
   }
@@ -328,7 +330,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const email = loginForm.querySelector('input[name="email"]').value;
       const password = loginForm.querySelector('input[name="password"]').value;
       const errorMsg = document.getElementById('login-error');
-
   try {
     const success = await loginUser(email, password);
     if (success) {
@@ -340,8 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       console.error(err.message);
       alert(err.message); // ou un alert pour informer l’utilisateur
-    }
-  }
-    });
+    }}
+  })
   }}
 })
