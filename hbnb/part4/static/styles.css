@@ -111,7 +111,7 @@ h3 {
   font-size: 1rem;
   font-weight: 600;
 }
-.login-button:hover, button:hover, input[type=submit]:hover { /* Ajout d'un effet de survol */
+.login-button:hover, button:hover, input[type=submit]:hover { /* Ajout d'un effet de survol (connexion) */
     background: #d91243;
     box-shadow: 0 3px 10px rgba(255,56,92,0.16);
     transform: translateY(-2px);
@@ -131,6 +131,24 @@ h3 {
     transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .details-button:hover, button:hover, input[type=submit]:hover {
+    background: #d91243;
+    box-shadow: 0 3px 10px rgba(255,56,92,0.16);
+    transform: translateY(-2px);
+}
+/* Bouton de déconnexion */
+.login-button, .logout-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 11px 30px; /* 8px 12px; */
+  background-color: #FF385C;
+  color: white;
+  text-decoration: none;
+  border-radius: 22px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.logout-button:hover, button:hover, input[type=submit]:hover { /* Ajout d'un effet de survol (déconnexion) */
     background: #d91243;
     box-shadow: 0 3px 10px rgba(255,56,92,0.16);
     transform: translateY(-2px);

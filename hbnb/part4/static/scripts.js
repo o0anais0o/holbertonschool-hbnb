@@ -2,13 +2,11 @@
 // - getCookie(name) Obtenir un cookie par son nom 
 // - checkAuthStatus() Vérifie si l'utilisateur est authentifié via un token
 // - checkAuthentication() Vérifie si l'utilisateur est authentifié
-// - toggleButtons(isLoggedIn) Affiche ou masque les boutons de connexion/déconnexion
 // - fetchPlaces() Récupère les places depuis l'API
 // - displayPlaces(places) Affiche les places dans le DOM
 // - applyPriceFilter(event) Applique un filtre de prix aux places
 // - setupPriceFilter() Configure le filtre de prix
 // - loginUser(email, password) Gère la connexion de l'utilisateur
-// - applyPriceFilter() Applique un filtre de prix aux places
 // - logoutUser() Gère la déconnexion de l'utilisateur
 // - Initialisation du script une fois le DOM chargé
 
@@ -28,13 +26,13 @@ function getCookie(name) {
 async function checkAuthStatus() {
   try {
     const response = await fetch('http://localhost:5000/api/v1/auth/status', {
-      credentials: 'include'
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'    // Envoie automatiquement les cookies (notamment le JWT cookie)
     });
-    if (!response.ok) return false;
-    const data = await response.json();
-    return Boolean(data.logged_in_as);
-  } catch (err) {
-    console.error('Erreur lors de la vérification de connexion :', err);
+    return response.ok;
+  } catch (error) {
+    console.error('Erreur vérification auth:', error);
     return false;
   }
 }
@@ -52,18 +50,6 @@ function checkAuthentication() {
     loginLink.style.display = 'none';
   }
 }
-
-//-------------------------------------------------------
-// Fonction pour afficher les boutons de connexion/déconnexion selon l'état d'authentification
-  function toggleButtons(isLoggedIn) {
-    if (isLoggedIn) {
-      if (loginBtn) loginBtn.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'block';
-    } else {
-      if (loginBtn) loginBtn.style.display = 'block'; // Affiche bouton ‘Se connecter’
-      if (logoutBtn) logoutBtn.style.display = 'none'; // Masque bouton ‘Déconnexion’
-    }
-  }
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM / Backend
@@ -159,19 +145,14 @@ async function loginUser(email, password) {
   const response = await fetch('http://localhost:5000/api/v1/auth/login', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    credentials: 'include',  // très important pour cookie HttpOnly
+    credentials: 'include',  // Très important pour cookie HttpOnly
     body: JSON.stringify({email, password})
   });
 
   if (!response.ok) {
-    // Essaye d’avoir un message d’erreur précis
-    let message = `Erreur login: statut ${response.status}`;
-    try {
-      const errorData = await response.json();
-      if (errorData.error) message = errorData.error;
-    } catch (e) {
-      // ignore erreur parsing JSON
-    }
+    // Tu peux récupérer un message d'erreur plus précis comme avant, si tu veux
+    const errorData = await response.json().catch(() => ({}));
+    const message = errorData.error || `Erreur login: statut ${response.status}`;
     throw new Error(message);
   }
 
@@ -182,166 +163,136 @@ async function loginUser(email, password) {
     throw new Error('Connexion refusée');
   }
 
+  // Pas besoin de token ici, il est géré automatiquement dans le cookie HttpOnly
+
   return true;
 }
 
-//-------------------------------------------------------
-// Fonction asynchrone pour faire la déconnexion vers backend
+// Fonction pour se déconnecter
 async function logoutUser() {
+  // Appelle ton endpoint backend /logout pour supprimer le cookie côté serveur
   const response = await fetch('http://localhost:5000/api/v1/auth/logout', {
     method: 'POST',
-    credentials: 'include' // important pour envoyer cookie JWT lors de logout
+    credentials: 'include' // IMPORTANT pour envoyer le cookie access_token_cookie
   });
 
   if (!response.ok) {
-    throw new Error('Erreur lors de la déconnexion');
+    alert('Erreur lors de la déconnexion');
+    return false;
   }
   return true;
 }
 
 //-------------------------------------------------------
-// --- Code d'initialisation et écouteurs d'événements --- 
+// --- Code d'initialisation et écouteurs d'événements ---
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOM fully loaded and parsed');
 
+  // Sélection des éléments du DOM
+  const loginBtn = document.getElementById('loginBtn');      // lien/bouton connexion
+  const logoutBtn = document.getElementById('logoutBtn');    // lien/bouton déconnexion
+  const loginSection = document.getElementById('login-section'); // modale/formulaire de connexion
   const loginForm = document.getElementById('login-form');
-  const loginSection = document.getElementById('login-section');
-  const loginLink = document.getElementById('login-link');
+  const closeBtn = document.getElementById('close-login-form');
   const priceFilter = document.getElementById('price-filter');
   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
-  const closeBtn = document.getElementById('close-login-form'); // Bouton pour fermer le formulaire de connexion
-  const loginBtn = document.getElementById('loginBtn'); // Bouton de connexion
-  const logoutBtn = document.getElementById('logoutBtn'); // Bouton de déconnexion
 
-  // Vérifier si l'utilisateur est authentifié via cookie JWT HttpOnly(existe côté backend)
+  // Vérifie statut authentification
   const isAuthenticated = await checkAuthStatus();
 
+  // Affichage boutons login/logout & modale/formulaire
   if (isAuthenticated) {
-    // Si connecté : cache le bouton Se connecter, affiche celui de déconnexion
-    loginBtn.style.display = 'none';
-    logoutBtn.style.display = 'block';
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'block';
+    if (loginSection) loginSection.style.display = 'none'; // cache la modale si besoin
   } else {
-    // Sinon : affiche bouton Se connecter, cache déconnexion
-    loginBtn.style.display = 'block';
-    logoutBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (loginSection) loginSection.style.display = 'none';
   }
 
-  // Applique l'affichage initial des boutons
-  toggleButtons(isAuthenticated);
-    if (isAuthenticated) {
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = 'block';
-    } else {
-      loginBtn.style.display = 'block';
-      logoutBtn.style.display = 'none';
-    }
-
-  // Pour le bouton connexion, tu peux gérer l'ouverture modale ou redirection selon ton besoin
+  // Gestion ouverture modale login
   if (loginBtn) {
-    loginBtn.addEventListener('click', e => {
-      // Ici tu peux ouvrir ta modale de connexion, par ex :
+    loginBtn.addEventListener('click', (e) => {
       e.preventDefault();
       if (loginSection) loginSection.style.display = 'flex';
     });
   }
 
-  // Lorsque l'utilisateur clique sur déconnexion
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async e => {
-      e.preventDefault();
-      try {
-        await logoutUser();
-        toggleButtons(false); // Affiche bouton se connecter
-        // Tu peux ici rajouter un message ou vider les données affichées si nécessaire
-        console.log('Déconnexion réussie, reste sur la page d\'accueil');
-      } catch (err) {
-        console.error('Erreur lors de la déconnexion :', err);
-        alert('Erreur lors de la déconnexion');
-      }
-    });
-  }
-
-  // Si l'utilisateur est authentifié, cache la section de connexion
+  // Gestion fermeture modale (croix)
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      loginSection.style.display = 'none';
+      if (loginSection) loginSection.style.display = 'none';
     });
   }
 
-  
-  if (loginSection) {
+  // Fermeture modale au clic sur overlay (en dehors du form)
+  if (loginSection && loginForm) {
     loginSection.addEventListener('click', (e) => {
-      if (e.target === loginSection) { // Clique vraiment sur le fond overlay, pas sur le form !
+      if (!loginForm.contains(e.target)) {
         loginSection.style.display = 'none';
       }
     });
   }
 
-  // Charge les places si conteneur existe
-  if (placesContainer) {
-      fetchPlaces(); // ou loadPlaces selon ton nom de fonction
-    } else {
-      console.warn('Element places container not found!');
-    }
-
-  // Active le filtre prix
-  if (priceFilter) {
-    setupPriceFilter();
-  } else {
-    console.warn('Element price-filter not found!');
-  // Pas connecté : afficher bouton login et masquer/afficher formulaire selon besoin
-  if (!isAuthenticated) {
-    if (loginBtn) loginBtn.style.display = 'block';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-    if (loginLink) loginLink.style.display = 'block';
-    if (loginSection) loginSection.style.display = 'none';
+  // Listener Déconnexion
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await logoutUser();
+      // Rafraîchit l'affichage login/logout sans redirection
+      if (loginBtn) loginBtn.style.display = 'block';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+    });
   }
 
-  // Vérifie si les éléments nécessaires existent
-  if (!loginLink || !loginSection || !loginBtn || !logoutBtn || !closeBtn) {
-    console.error('Un ou plusieurs éléments pour le modal login sont manquants');
-    return;
-  }
-
-  // Au départ : cacher la modale explicitement
-  loginSection.style.display = 'none';
-
-  loginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    loginSection.style.display = 'flex'; // affiche modal
-  });
-
-  closeBtn.addEventListener('click', () => {
-    loginSection.style.display = 'none'; // ferme modal
-  });
-
-  loginSection.addEventListener('click', (e) => {
-    if (e.target === loginSection) { // clique sur overlay
-      loginSection.style.display = 'none';
-    }
-  });
-
-  // Listener soumission formulaire login
+  // Listener formulaire login
   if (loginForm) {
-    loginForm.addEventListener('submit', async e => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = loginForm.querySelector('input[name="email"]').value;
       const password = loginForm.querySelector('input[name="password"]').value;
       const errorMsg = document.getElementById('login-error');
-  try {
-    const success = await loginUser(email, password);
-    if (success) {
-      window.location.href = 'index.html';
-    }
-  } catch (err) {
-    if (errorMsg) {
-      errorMsg.innerText = err.message;
-    } else {
-      console.error(err.message);
-      alert(err.message); // ou un alert pour informer l’utilisateur
-    }}
-  })
-  }}
-})
+      try {
+        const success = await loginUser(email, password);
+        if (success) {
+          // Mets à jour l'affichage login/logout
+          if (loginBtn) loginBtn.style.display = 'none';
+          if (logoutBtn) logoutBtn.style.display = 'block';
+          if (loginSection) loginSection.style.display = 'none';
+        }
+      } catch (err) {
+        if (errorMsg) {
+          errorMsg.innerText = err.message;
+        } else {
+          console.error(err.message);
+          alert(err.message);
+        }
+      }
+    });
+  }
+
+  // ➜ Toujours charger les places sur la page d'accueil pour tout le monde
+  if (placesContainer) {
+    fetchPlaces(); // ou loadPlaces(), selon ton code réel
+  } else {
+    console.warn('Element places container not found!');
+  }
+
+  // ➜ Toujours activer le filtre prix pour tout le monde
+  if (priceFilter) {
+    setupPriceFilter();
+  } else {
+    console.warn('Element price-filter not found!');
+  }
+
+  // Vérification présence des éléments critiques (tu peux garder ce bloc pour debug)
+  if (!loginBtn || !logoutBtn || !loginSection || !closeBtn) {
+    console.error('Un ou plusieurs éléments login/logout ou modale sont manquants');
+    // (Évite d'utiliser loginLink si tu ne l'as plus dans l'HTML)
+    // return; // à mettre seulement si tu veux stopper l'exécution
+  }
+
+});
