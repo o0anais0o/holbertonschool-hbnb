@@ -168,39 +168,52 @@ h3 {
 
 /* ------------------------------------------ */
 
-/* Conteneur principal de la nav */
+/* Desktop par défaut */
 .nav-container {
   display: flex;
-  align-items: center;
-  justify-content: space-between; /* logo à gauche, nav à droite */
-  max-width: 1200px; /* largeur max pour limiter */
-  margin: 0 auto; /* centrer horizontalement */
-  padding: 0 1em; /* padding horizontal */
-  box-sizing: border-box;
+  flex-direction: column;  /* empile logo puis liens verticalement */
+  align-items: flex-start; /* alignement à gauche */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1em;
 }
 
 /* Logo dans le header */
 .nav-brand .logo {
-  height: 80px; /* ou adapte selon ta taille souhaitée */
+  height: 80px; /* ou taille désirée */
+  margin-bottom: 1rem; /* espace entre logo et liens */
   flex-shrink: 0; /* ne rétrécit pas */
   display: block;
   object-fit: contain;
-  margin-right: auto; /* pousse nav à droite, fixe logo à gauche */
 }
 
-/* Navigation (liens) */
+/* Mettre les liens côte à côte */
 .nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1rem; /* espace entre liens */
+  display: flex;          /* clé ici pour le horizontal */
+  flex-direction: row;    /* liens alignés horizontalement */
+  gap: 1rem;              /* espace entre les liens */
+  width: 100%;            /* pour prendre la largeur disponible */
 }
 
-/* Supprimer tout float de tes boutons et liens */
+/* Style de base des liens */
+.nav-links a {
+  color: #222;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 6px 10px; /* espace intérieur pour éviter débordement texte */
+  white-space: nowrap; /* évite le retour à la ligne des liens */
+}
+
+/* Ajuster les boutons connexion/déconnexion */
 .login-button,
 .logout-button {
   display: inline-block;
-  float: none !important; /* au cas où dans un autre CSS */
-  /* autres styles bouton déjà en place */
+  float: none !important; /* désactive float en cas d'existant */
+  /* Remets éventuellement une taille de padding plus grande si ça déborde */
+  padding: 11px 30px;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 /* ------------------------------------------ */
@@ -353,6 +366,14 @@ footer {
 }
 
 /* ------------------------------------------ */
+
+/* Responsive mobile */
+@media (max-width: 650px) {
+  .nav-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 
 @media (max-width: 650px) {
     /* Main devient plus étroit, padding adapté */
