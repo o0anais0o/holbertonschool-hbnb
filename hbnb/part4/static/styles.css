@@ -24,7 +24,7 @@ header {
 }
 
 .logo {
-    height: 42px;
+    height: 100px;
 }
 
 nav {
@@ -99,6 +99,15 @@ h3 {
     color: #555;
 }
 
+/* Grille pour les cards de locations */
+#places-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+/* ------------------------------------------ */
+
 .login-button { /* Bouton de connexion en haut a gauche */
   position: absolute;
   top: 10px;
@@ -135,6 +144,9 @@ h3 {
     box-shadow: 0 3px 10px rgba(255,56,92,0.16);
     transform: translateY(-2px);
 }
+
+/* ------------------------------------------ */
+
 /* Bouton de déconnexion */
 .login-button, .logout-button {
   position: absolute;
@@ -153,11 +165,94 @@ h3 {
     box-shadow: 0 3px 10px rgba(255,56,92,0.16);
     transform: translateY(-2px);
 }
-/* Logo dans l'en-tête */
-.header-logo {
-  text-align: right;
-  padding: 10px;
+
+/* ------------------------------------------ */
+
+/* Conteneur principal de la nav */
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* logo à gauche, nav à droite */
+  max-width: 1200px; /* largeur max pour limiter */
+  margin: 0 auto; /* centrer horizontalement */
+  padding: 0 1em; /* padding horizontal */
+  box-sizing: border-box;
 }
+
+/* Logo dans le header */
+.nav-brand .logo {
+  height: 80px; /* ou adapte selon ta taille souhaitée */
+  flex-shrink: 0; /* ne rétrécit pas */
+  display: block;
+  object-fit: contain;
+  margin-right: auto; /* pousse nav à droite, fixe logo à gauche */
+}
+
+/* Navigation (liens) */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* espace entre liens */
+}
+
+/* Supprimer tout float de tes boutons et liens */
+.login-button,
+.logout-button {
+  display: inline-block;
+  float: none !important; /* au cas où dans un autre CSS */
+  /* autres styles bouton déjà en place */
+}
+
+/* ------------------------------------------ */
+
+/* Section modale login cachée par défaut et centrée */
+#login-section {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;           /* pour activer flexbox */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Formulaire login */
+#login-form {
+  background: #fff;
+  padding: 2em 2em 1.5em;
+  border-radius: 8px;
+  position: relative;
+  min-width: 300px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+/* Bouton fermer */
+#close-login-form {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Message d'erreur login */
+#login-error {
+  color: red;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* ------------------------------------------ */
 
 form {
     background: #fff;
@@ -205,6 +300,8 @@ form input:focus, form textarea:focus, form select:focus {
     font-weight: 600;
     margin-right: 8px;
 }
+
+/* ------------------------------------------ */
 
 /* section pour la fermeture du formulaire */
 #login-section {
@@ -255,42 +352,60 @@ footer {
     margin-top: 4rem;
 }
 
-/* Responsive pour mobile */
+/* ------------------------------------------ */
+
 @media (max-width: 650px) {
+    /* Main devient plus étroit, padding adapté */
     main {
         max-width: 99vw;
         padding: 7vw 4vw 4vw 4vw;
     }
+
+    /* Les cartes (places, reviews, formulaires) sont moins larges */
     .place-card, .review-card, form, #filter {
         padding: 1rem;
     }
+
+    /* Les liens de navigation sont plus petits et plus serrés */
     nav a {
         font-size: 0.95rem;
         padding: 6px 10px;
         gap: 8px;
     }
+
+    /* Header vertical, plus compact */
     header {
         flex-direction: column;
         gap: 10px;
         padding: 1rem;
     }
-}
 
-/* Grille pour les cards de locations */
-#places-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 28px;
-}
+    /* Liste des logements : passe automatiquement à une colonne, même sur 650px */
+    #places-list {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 0 7px;
+    }
 
-/* Pour mobile : une seule colonne */
-@media (max-width: 600px) {
-  #places-list {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 0 7px;
-  }
-  main {
-    padding: 10px 0;
-  }
+    /* Sous 600px : padding main encore plus réduit */
+    /* Astuce : une règle imbriquée ne passera pas en CSS standard, alors on priorise la règle suivante
+       qui s'appliquera car elle est après et s'écrasera sous 600px */
+    main {
+        padding: 10px 0;
+    }
+
+    /* --- Ajout des règles pour nav / logo responsive --- */
+    .nav-container {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .nav-links {
+        flex-grow: 1;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .nav-brand .logo {
+        height: 60px;
+    }
 }

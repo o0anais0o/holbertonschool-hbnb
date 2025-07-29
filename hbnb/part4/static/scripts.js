@@ -49,10 +49,10 @@ async function checkAuthentication() {
   const addReviewSection = document.getElementById('add-review');
   const loginLink = document.getElementById('login-link');
   const placeId = getPlaceIdFromURL();
-
+  
   if (!placeId) {
-    alert('Aucun ID de place fourni dans l’URL');
-    return;
+    // Il n'y a pas de place_id dans l'URL, donc on ne lance pas la logique dédiée à place
+    return;  // quitte la fonction sans afficher d'alerte
   }
   // Vérifie si l'utilisateur est authentifié
   if (loginLink) {
@@ -357,6 +357,24 @@ async function handleReviewFormSubmit(event) {
   } catch (error) {
     alert('Erreur lors de l\'envoi de l\'avis, veuillez réessayer.');
     console.error(error);
+  }
+}
+
+//-------------------------------------------------------
+// Fonction pour ouvrir la modale de login
+function openLoginModal() {
+  const loginSection = document.getElementById('login-section');
+  if (loginSection) {
+    loginSection.style.display = 'flex';  // rend visible la modale et la centre grâce au CSS flex
+  }
+}
+
+//-------------------------------------------------------
+// Fonction pour fermer la modale de login
+function closeLoginModal() {
+  const loginSection = document.getElementById('login-section');
+  if (loginSection) {
+    loginSection.style.display = 'none'; // cache la modale
   }
 }
 
