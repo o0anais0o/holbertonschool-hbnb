@@ -429,4 +429,35 @@ footer {
     .nav-brand .logo {
         height: 60px;
     }
+      /* Conteneur principal de la navigation */
+  .nav-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important; /* pour éviter wrap inattendu */
+    gap: 10px;                    /* peu d’espace si besoin */
+  }
+
+  /* Logo : fixe à gauche */
+  .nav-brand .logo {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    align-self: flex-start !important;
+    height: 60px;               /* taille adaptée */
+  }
+
+  /* Barre de liens côte à côte */
+  .nav-links {
+    width: 100%;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    gap: 1rem;
+  }
+
+  /* Les liens eux-mêmes */
+  .nav-links a {
+    white-space: nowrap;        /* pas de retour ligne */
+  }
 }
