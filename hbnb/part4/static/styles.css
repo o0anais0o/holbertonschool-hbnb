@@ -176,6 +176,7 @@ h3 {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1em;
+  box-sizing: border-box;
 }
 
 /* Logo dans le header */
@@ -190,7 +191,7 @@ h3 {
 /* Mettre les liens côte à côte */
 .nav-links {
   display: flex;          /* clé ici pour le horizontal */
-  flex-direction: row;    /* liens alignés horizontalement */
+  flex-direction: row;    /* liens alignés horizontalement / côte à côte */
   gap: 1rem;              /* espace entre les liens */
   width: 100%;            /* pour prendre la largeur disponible */
 }
@@ -367,14 +368,6 @@ footer {
 
 /* ------------------------------------------ */
 
-/* Responsive mobile */
-@media (max-width: 650px) {
-  .nav-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
 @media (max-width: 650px) {
     /* Main devient plus étroit, padding adapté */
     main {
@@ -409,13 +402,11 @@ footer {
     }
 
     /* Sous 600px : padding main encore plus réduit */
-    /* Astuce : une règle imbriquée ne passera pas en CSS standard, alors on priorise la règle suivante
-       qui s'appliquera car elle est après et s'écrasera sous 600px */
     main {
         padding: 10px 0;
     }
 
-    /* --- Ajout des règles pour nav / logo responsive --- */
+    /* Certaines règles pour nav / logo responsive */
     .nav-container {
         flex-wrap: wrap;
         gap: 10px;
@@ -429,35 +420,41 @@ footer {
     .nav-brand .logo {
         height: 60px;
     }
-      /* Conteneur principal de la navigation */
-  .nav-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    flex-wrap: nowrap !important; /* pour éviter wrap inattendu */
-    gap: 10px;                    /* peu d’espace si besoin */
-  }
 
-  /* Logo : fixe à gauche */
-  .nav-brand .logo {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    align-self: flex-start !important;
-    height: 60px;               /* taille adaptée */
-  }
+    /* --- Correctif important pour alignement fixe à gauche --- */
+    .nav-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        flex-wrap: nowrap !important;
+        gap: 10px;
+        padding-left: 0;
+        padding-right: 0;
+    }
 
-  /* Barre de liens côte à côte */
-  .nav-links {
-    width: 100%;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: flex-start !important;
-    gap: 1rem;
-  }
+    .nav-brand .logo {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        align-self: flex-start !important;
+        height: 60px; /* plus petit logo en mobile */
+    }
 
-  /* Les liens eux-mêmes */
-  .nav-links a {
-    white-space: nowrap;        /* pas de retour ligne */
-  }
+    .nav-links {
+        width: 100%;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        gap: 1rem;
+    }
+
+    .nav-links a {
+        white-space: nowrap;
+    }
+
+    /* Empêche tout centrage sur header et nav */
+    header, header nav {
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+    }
 }
