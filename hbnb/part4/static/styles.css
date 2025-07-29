@@ -153,6 +153,11 @@ h3 {
     box-shadow: 0 3px 10px rgba(255,56,92,0.16);
     transform: translateY(-2px);
 }
+/* Logo dans l'en-tête */
+.header-logo {
+  text-align: right;
+  padding: 10px;
+}
 
 form {
     background: #fff;
