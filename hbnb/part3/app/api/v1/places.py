@@ -51,7 +51,7 @@ def place_to_dict(place, details=True):
         'id': str(place.id),
         'title': place.title,
         'description': place.description,
-        'price': place.price,
+        'price_by_night': place.price,
         'latitude': place.latitude,
         'longitude': place.longitude,
         'owner_id': str(place.owner_id),
@@ -75,15 +75,18 @@ def place_to_dict(place, details=True):
         else:
             data['amenities'] = []
         if hasattr(place, 'reviews'):
-            data['reviews'] = [
-                {
+            data['reviews'] = []
+            for r in place.reviews:
+                user_name = "Anonyme"
+                if hasattr(r, 'user') and r.user:
+                    user_name = f"{r.user.first_name} {r.user.last_name}".strip()
+                data['reviews'].append({
                     'id': str(r.id),
                     'text': r.text,
                     'rating': r.rating,
-                    'user_id': str(r.user_id)
-                }
-                for r in place.reviews
-            ]
+                    'user_id': str(r.user_id),
+                    'user_name': user_name,
+                })
         else:
             data['reviews'] = []
     return data
