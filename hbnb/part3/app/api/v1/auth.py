@@ -91,6 +91,6 @@ def login_form():
     # Affiche la page de login HTML !
     return render_template('login.html')
 
-@web_bp.route('/')
-def index():
-    return render_template('index.html')
+@web_bp.route('/auth-home') # page d'acceuil
+def auth_home():
+    return render_template('auth_home.html')  # ou une autre page spécifique à l'authent

@@ -95,6 +95,8 @@ def create_app(config_name='default'):
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
 
-    print(app.url_map)  # Vérifie les routes disponibles
+    print("template_dir:", template_dir)
+    print("template_dir exists:", os.path.exists(template_dir))
+    print("index.html found:", os.path.exists(os.path.join(template_dir, 'index.html')))
 
     return app
