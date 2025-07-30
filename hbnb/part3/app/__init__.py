@@ -7,10 +7,9 @@
 # 6.Retourner l’app
 import os
 from flask_cors import CORS
-from flask import Flask, Blueprint, render_template
+from flask import Flask
 from app.extensions import db, jwt
 from flask_restx import Api
-from flask_jwt_extended import JWTManager
 
 jwt = JWTManager()
 
@@ -21,7 +20,12 @@ template_dir = os.path.abspath(os.path.join(basedir, '../../part4/templates'))
 static_dir = os.path.abspath(os.path.join(basedir, '../../part4/static'))
 
 # Import du blueprint défini avec ses routes dans views.py
-from app.views import web_bp
+from app.views import web_bp # Blueprint web = routes HTML classiques
+from app.api.v1.auth import api as auth_ns, auth_bp  # API auth
+from app.api.v1.users import api as users_ns
+from app.api.v1.places import api as places_ns
+from app.api.v1.amenities import api as amenities_ns
+from app.api.v1.reviews import api as reviews_ns
 
 def create_app(config_name='default'):
     
@@ -61,12 +65,6 @@ def create_app(config_name='default'):
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
 
-    from app.api.v1.auth import api as auth_ns, auth_bp
-    from app.api.v1.users import api as users_ns
-    from app.api.v1.places import api as places_ns
-    from app.api.v1.amenities import api as amenities_ns
-    from app.api.v1.reviews import api as reviews_ns
-
     authorizations = {
         'Bearer Auth': {
             'type': 'apiKey',
@@ -76,6 +74,7 @@ def create_app(config_name='default'):
         }
     }
 
+    # Création d'une unique instance Api flask_restx
     api_restx = Api(
         app,
         version='1.0',
@@ -86,17 +85,15 @@ def create_app(config_name='default'):
         security='Bearer Auth'
     )
 
+    # Ajout des namespaces API uniquement (pas de blueprint ici)
     api_restx.add_namespace(auth_ns, path='/api/v1/auth')
     api_restx.add_namespace(users_ns, path='/api/v1/users')
     api_restx.add_namespace(places_ns, path='/api/v1/places')
     api_restx.add_namespace(reviews_ns, path='/api/v1/reviews')
     api_restx.add_namespace(amenities_ns, path='/api/v1/amenities')
 
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
-    app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
-
-    print("template_dir:", template_dir)
-    print("template_dir exists:", os.path.exists(template_dir))
-    print("index.html found:", os.path.exists(os.path.join(template_dir, 'index.html')))
+    # Enregistrement des blueprints Flask classiques
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')  # auth_bp doit contenir uniquement les routes non-API (ex: espace web)
+    app.register_blueprint(web_bp)  # tes pages classiques (routes HTML)
 
     return app
