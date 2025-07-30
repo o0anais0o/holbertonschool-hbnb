@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from flask import Blueprint, jsonify, render_template
+from flask import jsonify
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity
 from app.services.facade import HBnBFacade
 
@@ -14,13 +14,6 @@ login_model = api.model('Login', {
 error_model = api.model('Error', {
     'error': fields.String()
 })
-
-# Création de Blueprints pour les routes d'authentification et web
-auth_bp = Blueprint('auth', __name__)
-
-@auth_bp.route('/login', methods=['GET'])
-def login_page():
-    return render_template('login.html')
 
 # ROUTES API REST
 @api.route('/login')
@@ -62,14 +55,3 @@ class Status(Resource):
             return jsonify({'logged_in_as': current_user})
         else:
             return jsonify({'logged_in_as': None}), 401
-
-# Blueprint pour routes web (pages HTML)
-web_bp = Blueprint('web', __name__)
-
-@web_bp.route('/login', methods=['GET'])
-def login_form():
-    return render_template('login.html')
-
-@web_bp.route('/auth-home')
-def auth_home():
-    return render_template('auth_home.html')

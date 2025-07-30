@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 
+# Blueprint pour routes web (pages HTML)
 web_bp = Blueprint('web', __name__)
 
 @web_bp.route('/')
@@ -14,3 +15,20 @@ def index():
         {'id': 7, 'name': "Appartement avec Vue Mer", 'price': 220, 'rating': 4.88, 'image': 'place7.jpg'}
     ]
     return render_template('index.html', places=places)
+
+# présent dans auth.py
+@web_bp.route('/login', methods=['GET'])
+def login_form():
+    return render_template('login.html')
+
+@web_bp.route('/auth-home')
+def auth_home():
+    return render_template('auth_home.html')
+
+
+# Création de Blueprints pour les routes d'authentification et web
+auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')

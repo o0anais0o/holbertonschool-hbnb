@@ -21,8 +21,7 @@ template_dir = os.path.abspath(os.path.join(basedir, '../../part4/templates'))
 static_dir = os.path.abspath(os.path.join(basedir, '../../part4/static'))
 
 # Import du blueprint défini avec ses routes dans views.py
-from app.views import web_bp # Blueprint web = routes HTML classiques
-from app.api.v1.auth import api as auth_ns, auth_bp  # API auth
+from app.api.v1.auth import api as auth_ns
 from app.api.v1.users import api as users_ns
 from app.api.v1.places import api as places_ns
 from app.api.v1.amenities import api as amenities_ns
@@ -93,10 +92,12 @@ def create_app(config_name='default'):
     api_restx.add_namespace(reviews_ns, path='/api/v1/reviews')
     api_restx.add_namespace(amenities_ns, path='/api/v1/amenities')
 
+    # Importer le blueprint web_bp depuis views.py
+    from app.views import web_bp
+    from app.views import auth_bp
+
     # Enregistrement des blueprints Flask classiques
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(web_bp)  # tes pages classiques (routes HTML)
-
-    print("URL MAP :", app.url_map)
 
     return app
