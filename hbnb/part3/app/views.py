@@ -16,15 +16,9 @@ def index():
     ]
     return render_template('index.html', places=places)
 
-# présent dans auth.py
-@web_bp.route('/login', methods=['GET'])
-def login_form():
-    return render_template('login.html')
-
 @web_bp.route('/auth-home')
 def auth_home():
     return render_template('auth_home.html')
-
 
 # Création de Blueprints pour les routes d'authentification et web
 auth_bp = Blueprint('auth', __name__)

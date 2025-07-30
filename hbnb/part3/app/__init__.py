@@ -14,7 +14,7 @@ from flask_jwt_extended import JWTManager
 
 jwt = JWTManager()
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__)) 
 # Passe un chemin absolu vers hbnb/part4/templates
 template_dir = os.path.abspath(os.path.join(basedir, '../../part4/templates'))
 # Chemin absolu vers part3/static (backend), où tu as tes images par ex.
@@ -28,7 +28,7 @@ from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.reviews import api as reviews_ns
 
 def create_app(config_name='default'):
-    
+
     # Création de l'app Flask avec dossier templates ET static personnalisés
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
@@ -93,8 +93,7 @@ def create_app(config_name='default'):
     api_restx.add_namespace(amenities_ns, path='/api/v1/amenities')
 
     # Importer le blueprint web_bp depuis views.py
-    from app.views import web_bp
-    from app.views import auth_bp
+    from app.views import web_bp, auth_bp
 
     # Enregistrement des blueprints Flask classiques
     app.register_blueprint(auth_bp, url_prefix='/auth')
