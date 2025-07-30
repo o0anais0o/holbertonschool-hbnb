@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Holberton HBNB - Accueil</title>
     <!-- Ajoute ici tes liens CSS, favicon, etc. -->
-    <link rel="stylesheet" href="/static/styles.css" />
+    <!--  <link rel="stylesheet" href="/static/styles.css" />   A suprimer si test jinja ok --> 
+     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
 
 <body>
@@ -14,14 +15,26 @@
   <nav>
     <div class="nav-container">
       <div class="nav-brand">
-        <a href="index.html">
-          <img src="../images/HBTN-hbnb-Final.png" alt="HBnB Logo" class="logo" />
+        <!-- <a href="index.html">   pas utile pour le moment peu etre a suprimer -->
+        <!-- <img src="../static/images/logo/HBTN-hbnb-Final.png" alt="HBnB Logo" class="logo" />   A suprimer si test jinja ok --> 
+          <img src="{{ url_for('static', filename='images/logo/HBTN-hbnb-Final.png') }}" alt="HBnB Logo" class="logo" />
         </a>
       </div>
       <div class="nav-links">
-        <a href="index.html" class="active">Accueil</a>
-        <a href="create-place.html">Créer un lieu</a>
-        <a href="my-places.html">Mes lieux</a>
+    <!-- Filtre prix -->
+    <div class="filter-container" style="margin: 1em 0;">
+      <label for="price-filter">Filtrer par prix : </label>
+      <select id="price-filter" name="price-filter">
+        <option value="all" selected>Tous les prix</option>
+        <option value="50">Jusqu'à 50€</option>
+        <option value="100">Jusqu'à 100€</option>
+        <option value="150">Jusqu'à 150€</option>
+        <!-- Ajouter d’autres options ici -->
+      </select>
+    </div>
+        <!-- <a href="index.html" class="active">Accueil</a> -->
+        <!-- <a href="create-place.html">Créer un lieu</a> -->
+        <!-- <a href="my-places.html">Mes lieux</a> -->
         <a id="loginBtn" href="#" class="login-button">Connexion</a>
         <a id="logoutBtn" href="#" class="logout-button" style="display:none;">Déconnexion</a>
       </div>
@@ -45,26 +58,21 @@
   <!-- ... le reste de ton contenu ... -->
 </main>
 
-  <!-- === Section Liste des logements === -->
-  <section id="places-list-section">
+<!-- === Section Liste des logements === -->
+<section class="places-list">
     <h2>Logements disponibles</h2>
-      <div id="places-list"></div>
-    <!-- Les logements viendront s’afficher ici dynamiquement -->
-
-    <!-- Filtre prix -->
-    <div class="filter-container" style="margin: 1em 0;">
-      <label for="price-filter">Filtrer par prix : </label>
-      <select id="price-filter" name="price-filter">
-        <option value="all" selected>Tous les prix</option>
-        <option value="50">Jusqu'à 50€</option>
-        <option value="100">Jusqu'à 100€</option>
-        <option value="150">Jusqu'à 150€</option>
-        <!-- Tu peux ajouter d’autres options ici -->
-      </select>
+    <div class="places-wrapper">
+      {% for place in places %}
+      <a class="place-card" href="#">
+        <img src="{{ url_for('static', filename='images/places/' + place.image) }}" alt="{{ place.name }}" />
+        <div class="place-info">
+          <span class="place-name">{{ place.name }}</span>
+          <span class="place-price">{{ place.price }}€ pour 2 nuits</span>
+          <span class="place-rating">&#9733; {{ '%.2f' % place.rating }}</span>
+        </div>
+      </a>
+      {% endfor %}
     </div>
-
-    <!-- Conteneur vide où ton JS affichera les places -->
-    <div id="places-container"></div>
   </section>
 
   </main>
@@ -125,6 +133,7 @@
   <p>© Holberton HBNB - 2025</p>
 </footer>
 
-  <script src="/static/scripts.js" defer></script>
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+  <!--   <script src="/static/scripts.js" defer></script>    A suprimer si test jinja ok --> 
 </body>
 </html>

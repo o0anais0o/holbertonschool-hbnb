@@ -94,33 +94,118 @@ h3 {
     color: #222;
 }
 
-/* Cards pour les lieux et les avis */
-.place-card, .review-card {
-    margin: 20px 0;
-    padding: 18px 22px;
-    background: #fff;
-    border-radius: 16px;
-    border: 1.2px solid #e8e8e8;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
+/* --------------------------------------------
+   Conteneur principal de la section "Logements disponibles"
+   Centre le texte et ajoute un espace vertical (marge)
+-------------------------------------------- */
+.places-list {
+  text-align: center;
+  margin: 40px 0;
 }
 
-.place-card h2 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin: 0;
-}
-.place-card p {
-    color: #555;
+/* --------------------------------------------
+   Conteneur qui englobe toutes les vignettes (cartes)
+   Utilise flexbox pour aligner horizontalement, centrer,
+   gérer l'espacement entre cartes et permettre le retour à la ligne 
+-------------------------------------------- */
+.places-wrapper {
+  display: flex;               /* active Flexbox */
+  justify-content: center;     /* centre les cartes horizontalement */
+  gap: 25px;                   /* espace uniforme entre cartes */
+  flex-wrap: wrap;             /* permet de passer à la ligne si manque de place */
 }
 
-/* Grille pour les cards de locations */
-#places-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 28px;
+/* --------------------------------------------
+   Style pour chaque vignette ("carte place")
+   Définit apparence, dimensions et comportements au survol
+-------------------------------------------- */
+.place-card {
+  background: #fff;                        /* fond blanc */
+  border-radius: 10px;                     /* coins légèrement arrondis */
+  overflow: hidden;                        /* masque le dépassement, utile pour les images */
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07); /* ombre douce */
+  text-decoration: none;                   /* suppression soulignement des liens */
+  width: 270px;                           /* largeur fixe pour uniformité */
+  display: flex;                         /* flexbox pour empiler verticalement */
+  flex-direction: column;                 /* disposition verticale */
+  align-items: center;                    /* centre horizontalement le contenu */
+  transition: box-shadow 0.2s;            /* animation douce à l'effet d'ombre */
+}
+
+/* --------------------------------------------
+   Effet au survol de la vignette : ombre plus prononcée
+-------------------------------------------- */
+.place-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+}
+
+/* --------------------------------------------
+   Style de l'image de la vignette
+   S'adapte à la largeur du conteneur, hauteur fixe
+   Image recadrée pour couvrir sans déformer (cover)
+-------------------------------------------- */
+.place-card img {
+  width: 100%;             /* prend toute la largeur de la carte */
+  height: 180px;           /* hauteur fixe */
+  object-fit: cover;       /* recadre l'image pour remplir la boîte */
+}
+
+/* --------------------------------------------
+   Conteneur des informations textuelles sous l'image
+   Padding interne pour espacer le contenu des bords
+   Largeur pleine carte
+   Structure en colonne, alignement à gauche
+-------------------------------------------- */
+.place-info {
+  padding: 14px 12px 10px 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* --------------------------------------------
+   Styles pour le nom du logement
+   Texte en gras, taille légèrement augmentée
+   Marge inférieure pour espacer les éléments suivants
+-------------------------------------------- */
+.place-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+}
+
+/* --------------------------------------------
+   Styles pour l'affichage du prix
+   Couleur grise, taille de texte normale
+   Marge inférieure pour espacer des autres infos
+-------------------------------------------- */
+.place-price {
+  color: #636363;
+  font-size: 0.98rem;
+  margin-bottom: 4px;
+}
+
+/* --------------------------------------------
+   Styles pour la note sous forme de texte avec étoile
+   Couleur orange (type “étoile”)
+   Affichage en flex pour aligner l'étoile et la note verticalement
+-------------------------------------------- */
+.place-rating {
+  font-size: 1rem;
+  color: #fa8231;
+  display: flex;
+  align-items: center;
+}
+
+/* --------------------------------------------
+   Style de l'icône "étoile" dans la note
+   Taille légèrement plus grande que le texte
+   Marge droite pour espacer de la valeur numérique
+-------------------------------------------- */
+.place-rating .star {
+  font-size: 1.15rem;
+  margin-right: 3px;
 }
 
 /* ------------------------------------------ */

@@ -7,21 +7,26 @@
 # 6.Retourner l’app
 import os
 from flask_cors import CORS
-from flask import Flask, jsonify
+from flask import Flask, Blueprint, render_template
 from app.extensions import db, jwt
 from flask_restx import Api
-from flask import render_template, Blueprint
 from flask_jwt_extended import JWTManager
 
 jwt = JWTManager()
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+# Passe un chemin absolu vers hbnb/part4/templates
+template_dir = os.path.abspath(os.path.join(basedir, '../../part4/templates'))
+# Chemin absolu vers part3/static (backend), où tu as tes images par ex.
+static_dir = os.path.abspath(os.path.join(basedir, '../../part4/static'))
+
+# Import du blueprint défini avec ses routes dans views.py
+from app.views import web_bp
+
 def create_app(config_name='default'):
     
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    # Passe un chemin absolu vers hbnb/part4/templates
-    template_dir = os.path.abspath(os.path.join(basedir, '../../part4/templates'))
-
-    app = Flask(__name__, template_folder=template_dir)
+    # Création de l'app Flask avec dossier templates ET static personnalisés
+    app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
     # Charger la config (ex : JWT_SECRET_KEY, DB URI, etc.)
     from config import config
@@ -46,7 +51,7 @@ def create_app(config_name='default'):
     # Gestion explicite des requêtes OPTIONS (préflight)
     @app.before_request
     def handle_options():
-        from flask import request
+        from flask import request, jsonify
         if request.method == "OPTIONS":
             response = jsonify({})
             response.status_code = 200
@@ -56,14 +61,7 @@ def create_app(config_name='default'):
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
 
-    web_bp = Blueprint('web', __name__, template_folder='../../part4/templates')
-
-    @web_bp.route('/templates/index.html')
-    def index():
-        # Page d'accueil publique, accessible par tous
-        return render_template('index.html')
-
-    from app.api.v1.auth import api as auth_ns, auth_bp, web_bp # Import du Blueprint pour les routes web
+    from app.api.v1.auth import api as auth_ns, auth_bp
     from app.api.v1.users import api as users_ns
     from app.api.v1.places import api as places_ns
     from app.api.v1.amenities import api as amenities_ns
@@ -96,5 +94,7 @@ def create_app(config_name='default'):
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth') # Enregistre tes blueprints dans l'app Flask
     app.register_blueprint(web_bp) # Enregistrement du Blueprint pour les routes web
+
+    print(app.url_map)  # Vérifie les routes disponibles
 
     return app
