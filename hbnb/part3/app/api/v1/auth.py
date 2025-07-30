@@ -15,6 +15,13 @@ error_model = api.model('Error', {
     'error': fields.String()
 })
 
+# Création de Blueprints pour les routes d'authentification et web
+auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')
+
 # ROUTES API REST
 @api.route('/login')
 class Login(Resource):

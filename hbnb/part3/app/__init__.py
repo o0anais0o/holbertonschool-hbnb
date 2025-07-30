@@ -10,6 +10,7 @@ from flask_cors import CORS
 from flask import Flask
 from app.extensions import db, jwt
 from flask_restx import Api
+from flask_jwt_extended import JWTManager
 
 jwt = JWTManager()
 
@@ -93,7 +94,9 @@ def create_app(config_name='default'):
     api_restx.add_namespace(amenities_ns, path='/api/v1/amenities')
 
     # Enregistrement des blueprints Flask classiques
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')  # auth_bp doit contenir uniquement les routes non-API (ex: espace web)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(web_bp)  # tes pages classiques (routes HTML)
+
+    print("URL MAP :", app.url_map)
 
     return app
