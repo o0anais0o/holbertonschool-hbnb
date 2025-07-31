@@ -62,18 +62,18 @@
 <section class="places-list">
     <h2>Logements disponibles</h2>
     <div class="places-wrapper">
-      {% for place in places %}
-      <a class="place-card" href="#">
-        <img src="{{ url_for('static', filename='images/places/' + place.image) }}" alt="{{ place.name }}" />
-        <div class="place-info">
-          <span class="place-name">{{ place.name }}</span>
-          <span class="place-price">{{ place.price }}€ pour 2 nuits</span>
-          <span class="place-rating">&#9733; {{ '%.2f' % place.rating }}</span>
-        </div>
-      </a>
-      {% endfor %}
+        {% for place in places %}
+        <a class="place-card" href="place.html?id={{ place.id }}" data-price="{{ place.price }}">
+            <img src="{{ url_for('static', filename='images/places/' + place.image) }}" alt="{{ place.name }}" />
+            <div class="place-info">
+                <span class="place-name">{{ place.name }}</span>
+                <span class="place-price">{{ place.price }}€ pour 2 nuits</span>
+                <span class="place-rating">&#9733; {{ '%.2f' % place.rating }}</span>   <!-- Filtre prix -->
+            </div>
+        </a>
+        {% endfor %}
     </div>
-  </section>
+</section>
 
   </main>
 

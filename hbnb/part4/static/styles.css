@@ -209,6 +209,14 @@ h3 {
 }
 
 /* ------------------------------------------ */
+/* Page detail place */
+.place-details {
+    padding: 20px;
+    background-color: #f8f8f8;
+    /* autres styles que tu souhaites */
+}
+
+/* ------------------------------------------ */
 
 .login-button { /* Bouton de connexion en haut a gauche */
   position: absolute;
@@ -469,6 +477,7 @@ footer {
 }
 
 /* ------------------------------------------ */
+/* Responsivité */
 
 @media (max-width: 650px) {
     /* Main devient plus étroit, padding adapté */
