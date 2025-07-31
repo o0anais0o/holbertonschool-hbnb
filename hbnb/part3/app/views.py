@@ -3,7 +3,6 @@ from flask import Blueprint, render_template
 # Blueprint pour routes web (pages HTML)
 web_bp = Blueprint('web', __name__)
 
-
 @web_bp.route('/')
 def index():
     places = [
@@ -27,8 +26,3 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET'])
 def login_page():
     return render_template('login.html')
-
-@web_bp.route('/place.html')
-def place_detail():
-    return render_template('place.html')
-
