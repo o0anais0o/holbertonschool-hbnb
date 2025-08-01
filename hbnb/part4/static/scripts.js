@@ -397,6 +397,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
   const reviewForm = document.getElementById('review-form'); // Ajoute l'écouteur sur le formulaire d'avis
 
+  // Activer le filtre prix pour tout le monde, doit bien rester ici, directement sous les éléments du DOM (pas a la fin)
+  if (priceFilter) {
+    setupPriceFilter();
+  } else {
+    console.warn('Element price-filter not found!');
+  }
+
   // Vérifie statut authentification
   const isAuthenticated = await checkAuthStatus();
 
@@ -483,13 +490,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchPlaces(); // ou loadPlaces(), selon ton code réel
   } else {
     console.warn('Element places container not found!');
-  }
-
-  // Activer le filtre prix pour tout le monde
-  if (priceFilter) {
-    setupPriceFilter();
-  } else {
-    console.warn('Element price-filter not found!');
   }
 
   // Vérification présence des éléments critiques (tu peux garder ce bloc pour debug)
