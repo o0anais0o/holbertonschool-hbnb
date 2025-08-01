@@ -72,41 +72,42 @@ async function checkAuthentication() {
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM / Backend
-/* async function fetchPlaces() {
-  // Sélectionne le conteneur où afficher les places
-  const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
+// async function fetchPlaces() {
+//   // Sélectionne le conteneur où afficher les places
+//   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
 
-  if (!placesContainer) {
-    console.error('Element #places-container ou #places-list not found in DOM!');
-    return;
-  }
+//   if (!placesContainer) {
+//     console.error('Element #places-container ou #places-list not found in DOM!');
+//     return;
+//   }
 
-  console.log('Chargement des places ...');
+//   console.log('Chargement des places ...');
 
-  const token = getCookie('token');
-  const headers = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+//   const token = getCookie('token');
+//   const headers = {};
+//   if (token) {
+//     headers['Authorization'] = `Bearer ${token}`;
+//   }
 
-  try {
-    const response = await fetch('http://0.0.0.0:5000/api/v1/places', {
-      method: 'GET',
-      headers: headers,
-    });
+//   try {
+//     const response = await fetch('http://0.0.0.0:5000/api/v1/places', {
+//       method: 'GET',
+//       headers: headers,
+//     });
 
-    if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
+//     if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    // Affiche les places dans le conteneur trouvé
-    displayPlaces(data);
-  } catch (err) {
-    console.error('Erreur lors du chargement des places:', err);
-    placesContainer.innerHTML = '<p>Impossible de charger les places.</p>';
-  }
-}
-*/
+//     // Affiche les places dans le conteneur trouvé
+//     displayPlaces(data);
+//   } catch (err) {
+//     console.error('Erreur lors du chargement des places:', err);
+//     placesContainer.innerHTML = '<p>Impossible de charger les places.</p>';
+//   }
+// }
+
+
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM
 function displayPlaces(places) {
@@ -237,6 +238,7 @@ function applyPriceFilter(event) {
   const placeCards = document.querySelectorAll('.place-card');
   placeCards.forEach(card => {
     const price = parseInt(card.dataset.price, 10);
+    console.log(price);
     if (maxPrice === 'all' || price <= maxPrice) {
       card.style.display = '';
     } else {
