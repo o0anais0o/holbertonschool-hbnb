@@ -72,7 +72,7 @@ async function checkAuthentication() {
 
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM / Backend
-async function fetchPlaces() {
+/* async function fetchPlaces() {
   // Sélectionne le conteneur où afficher les places
   const placesContainer = document.getElementById('places-container') || document.getElementById('places-list');
 
@@ -106,7 +106,7 @@ async function fetchPlaces() {
     placesContainer.innerHTML = '<p>Impossible de charger les places.</p>';
   }
 }
-
+*/
 //-------------------------------------------------------
 // Fonction pour afficher les places dans le DOM
 function displayPlaces(places) {
