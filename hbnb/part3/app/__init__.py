@@ -40,7 +40,7 @@ def create_app(config_name='default'):
     app.config.from_object(config[config_name])
    
     # CORS global, avec support des credentials (cookies, auth) et autorisation exacte de l'origine frontend http://localhost:8000
-    CORS(app, supports_credentials=True, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
+    CORS(app, supports_credentials=True, origins=["http://localhost:8000","http://127.0.0.1:8000","http://localhost:5000"])
     app.config['JWT_SECRET_KEY'] = 'secret_key' # Clé secrète pour signer les tokens, à changer en production
     app.config['JWT_TOKEN_LOCATION'] = ['cookies'] # Configure les emplacements où JWT sera cherché (ici uniquement dans les cookies)
     app.config['JWT_COOKIE_SECURE'] = False  # True si https obligatoire ; False pour dev local
